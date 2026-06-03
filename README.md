@@ -3,7 +3,7 @@ An intelligent web-based shopping assistant built for Malaysian university stude
 smarter purchasing decisions on electronics. Automatically analyzes hundreds of YouTube reviews,
 compares prices across Shopee and Lazada, and lets you search products by photo.
 
-✨ Technologies
+#✨ Technologies
 * `Python`
 * `FastAPI`
 * `React`
@@ -12,14 +12,14 @@ compares prices across Shopee and Lazada, and lets you search products by photo.
 * `PostgreSQL`
 * `Netlify`
 
-🚀 Features
+#🚀 Features
 * Analyzes YouTube review videos using a GPT + BERT hybrid pipeline to generate objective aspect-level product ratings
 * Automated price comparison across Shopee and Lazada in real time
 * Visual product search powered by GPT-4 Vision — upload a photo to find the product
 * GPT-4 chatbot assistant that understands natural language and recommends products by budget and needs
 * Auto-selects the best 20 products from 48 candidates based on data richness across 4 categories
 
-📍 The Process
+#📍 The Process
 Buying electronics is genuinely painful. You spend hours watching YouTube reviews,
 jumping between Shopee and Lazada tabs, and still end up unsure if you're making the right call.
 I wanted to build something that did all of that work for you. The hardest part was the review
@@ -29,7 +29,7 @@ sentiment with GPT for preprocessing, which made the results a lot more trustwor
 model alone. Threw in price comparison, visual search, and a chatbot on top to make it a proper
 end-to-end shopping assistant. Still ironing out a few mobile issues, but the core system works.
 
-🚦 Running the Project
+#🚦 Running the Project
 1. Clone the repository
 2. Install backend dependencies: `pip install -r requirements.txt`
 3. Start the FastAPI server: `uvicorn main:app --reload`
