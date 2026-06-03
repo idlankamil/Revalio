@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MacBook Air M4 — Revalio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --accent: #00C9A7; --accent-2: #0EA5E9;
+      --accent-glow: rgba(0,201,167,0.2); --accent-glow-strong: rgba(0,201,167,0.4);
+      --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    [data-theme="dark"] {
+      --bg: #080C12; --bg-card: #111820; --bg-2: #0D1117;
+      --border: rgba(255,255,255,0.07); --border-hover: rgba(0,201,167,0.4);
+      --text-primary: #F0F4FF; --text-secondary: #8B9EC0; --text-muted: #4A5A72;
+      --nav-bg: rgba(8,12,18,0.88); --badge-bg: rgba(0,201,167,0.1);
+      --tag-bg: rgba(255,255,255,0.05); --step-bg: rgba(255,255,255,0.03);
+      --pro-bg: rgba(0,201,167,0.08); --con-bg: rgba(251,113,133,0.08);
+      --pro-border: rgba(0,201,167,0.2); --con-border: rgba(251,113,133,0.2);
+      --shopee-bg: rgba(238,77,45,0.1); --lazada-bg: rgba(0,113,206,0.1);
+      --score-track: rgba(255,255,255,0.06);
+    }
+    [data-theme="light"] {
+      --bg: #F5F7FA; --bg-card: #fff; --bg-2: #fff;
+      --border: rgba(0,0,0,0.07); --border-hover: rgba(0,201,167,0.5);
+      --text-primary: #0D1117; --text-secondary: #4A5A72; --text-muted: #9BADC2;
+      --nav-bg: rgba(245,247,250,0.92); --badge-bg: rgba(0,201,167,0.08);
+      --tag-bg: rgba(0,0,0,0.04); --step-bg: rgba(0,0,0,0.02);
+      --pro-bg: rgba(0,201,167,0.06); --con-bg: rgba(251,113,133,0.06);
+      --pro-border: rgba(0,201,167,0.25); --con-border: rgba(251,113,133,0.25);
+      --shopee-bg: rgba(238,77,45,0.06); --lazada-bg: rgba(0,113,206,0.06);
+      --score-track: rgba(0,0,0,0.06);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-primary); transition: background var(--transition), color var(--transition); overflow-x: hidden; }
+    a { text-decoration: none; color: inherit; }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+    /* NAV */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); background: var(--nav-bg); border-bottom: 1px solid var(--border); transition: background var(--transition); }
+    .nav-inner { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 64px; }
+    .nav-logo { display: flex; align-items: center; gap: 10px; font-family: 'Playfair Display', serif; font-weight: 800; font-size: 1.5rem; font-style: italic; }
+    .nav-logo-icon { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; color: white; font-style: normal; }
+    .nav-logo span { color: var(--accent); }
+    .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
+    .nav-links a { font-size: 0.875rem; font-weight: 500; color: var(--text-secondary); transition: color var(--transition); }
+    .nav-links a:hover { color: var(--text-primary); }
+    .nav-right { display: flex; align-items: center; gap: 1rem; }
+    .theme-toggle { width: 44px; height: 24px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; cursor: pointer; position: relative; transition: all var(--transition); display: flex; align-items: center; padding: 2px; }
+    .theme-toggle::after { content: ''; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); transition: transform var(--transition); display: block; }
+    [data-theme="light"] .theme-toggle::after { transform: translateX(20px); }
+    .theme-icon { position: absolute; font-size: 10px; transition: opacity var(--transition); }
+    .theme-icon.moon { right: 5px; opacity: 1; } .theme-icon.sun { left: 5px; opacity: 0; }
+    [data-theme="light"] .theme-icon.moon { opacity: 0; } [data-theme="light"] .theme-icon.sun { opacity: 1; }
+    .nav-cta { padding: 8px 18px; border-radius: 8px; background: var(--accent); color: #fff; font-size: 0.85rem; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif; border: none; cursor: pointer; transition: all var(--transition); }
+    .nav-cta:hover { opacity: 0.85; transform: translateY(-1px); box-shadow: 0 4px 20px var(--accent-glow-strong); }
+
+    /* BREADCRUMB */
+    .breadcrumb-bar { padding-top: 88px; padding-bottom: 0; }
+    .breadcrumb { max-width: 1280px; margin: 0 auto; padding: 1rem 2rem; display: flex; align-items: center; gap: 8px; font-size: 0.8rem; color: var(--text-muted); }
+    .breadcrumb a { color: var(--text-muted); transition: color var(--transition); }
+    .breadcrumb a:hover { color: var(--accent); }
+    .breadcrumb-sep { color: var(--text-muted); }
+    .breadcrumb-cur { color: var(--text-secondary); font-weight: 500; }
+
+    /* MAIN LAYOUT */
+    .page-content { max-width: 1280px; margin: 0 auto; padding: 0 2rem 4rem; display: grid; grid-template-columns: 1fr 380px; gap: 2.5rem; align-items: start; }
+
+    /* LEFT COLUMN */
+    .left-col { display: flex; flex-direction: column; gap: 1.5rem; }
+
+    /* HERO PRODUCT CARD */
+    .product-hero {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; overflow: hidden;
+      animation: fade-up 0.5s ease both;
+    }
+    .product-hero-image {
+      height: 340px; position: relative;
+      background: linear-gradient(135deg, rgba(0,201,167,0.06), rgba(14,165,233,0.06));
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .product-emoji { font-size: 8rem; transition: transform 0.5s ease; }
+    .product-hero-image:hover .product-emoji { transform: scale(1.08); }
+
+    /* Image gallery dots */
+    .gallery-dots { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); cursor: pointer; transition: all var(--transition); }
+    .dot.active { background: var(--accent); width: 18px; border-radius: 3px; }
+
+    /* Badges on image */
+    .hero-badge-tl { position: absolute; top: 16px; left: 16px; padding: 5px 12px; border-radius: 100px; background: var(--accent); color: white; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+    .hero-wishlist { position: absolute; top: 16px; right: 16px; width: 40px; height: 40px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 1rem; cursor: pointer; transition: all var(--transition); }
+    .hero-wishlist:hover { border-color: rgba(251,113,133,0.5); background: rgba(251,113,133,0.1); transform: scale(1.1); }
+
+    .product-hero-body { padding: 1.75rem; }
+    .product-meta-row { display: flex; align-items: center; gap: 10px; margin-bottom: 0.75rem; flex-wrap: wrap; }
+    .meta-brand { font-size: 0.75rem; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.08em; }
+    .meta-cat { font-size: 0.72rem; color: var(--text-muted); background: var(--tag-bg); padding: 2px 10px; border-radius: 100px; border: 1px solid var(--border); }
+    .product-title { font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 800; line-height: 1.15; margin-bottom: 1rem; letter-spacing: -0.01em; }
+    .product-desc { font-size: 0.92rem; color: var(--text-secondary); line-height: 1.7; }
+
+    /* OVERALL SCORE CARD */
+    .score-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px;
+      padding: 2rem; animation: fade-up 0.5s ease 0.1s both;
+    }
+    .card-title { font-family: 'Playfair Display', serif; font-size: 1.2rem; font-weight: 800; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px; }
+    .card-title-badge { width: 28px; height: 28px; border-radius: 8px; background: var(--badge-bg); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+
+    /* Big score ring */
+    .score-overview { display: flex; align-items: center; gap: 2.5rem; margin-bottom: 2rem; }
+    .score-ring-wrap { position: relative; flex-shrink: 0; }
+    .score-ring-svg { transform: rotate(-90deg); }
+    .score-ring-bg { fill: none; stroke: var(--score-track); stroke-width: 8; }
+    .score-ring-fill { fill: none; stroke: url(#scoreGrad); stroke-width: 8; stroke-linecap: round; stroke-dasharray: 339.3; stroke-dashoffset: 339.3; transition: stroke-dashoffset 1.8s cubic-bezier(0.4,0,0.2,1); }
+    .score-ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .score-big { font-family: 'Playfair Display', serif; font-size: 2.2rem; font-weight: 900; line-height: 1; }
+    .score-max { font-size: 0.75rem; color: var(--text-muted); font-weight: 500; }
+    .score-label { font-size: 0.68rem; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+
+    .score-summary { flex: 1; }
+    .score-verdict { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .score-desc { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 1rem; }
+    .score-meta { display: flex; gap: 1.5rem; }
+    .score-meta-item { display: flex; flex-direction: column; gap: 2px; }
+    .score-meta-val { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 800; }
+    .score-meta-label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+    /* ASPECT BARS */
+    .aspects-grid { display: flex; flex-direction: column; gap: 1rem; }
+    .aspect-row { display: flex; align-items: center; gap: 1rem; }
+    .aspect-label { font-size: 0.82rem; font-weight: 600; width: 130px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; }
+    .aspect-icon { font-size: 1rem; }
+    .aspect-bar-wrap { flex: 1; }
+    .aspect-track { height: 8px; background: var(--score-track); border-radius: 4px; overflow: hidden; }
+    .aspect-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); width: 0; transition: width 1.5s cubic-bezier(0.4,0,0.2,1); }
+    .aspect-score { font-size: 0.82rem; font-weight: 700; width: 36px; text-align: right; flex-shrink: 0; }
+    .aspect-stars { font-size: 0.65rem; color: var(--text-muted); margin-top: 3px; }
+
+    /* Rating loading state */
+    .rating-loading .score-big { color: transparent; background: var(--score-track); border-radius: 6px; animation: rating-pulse 1.4s ease-in-out infinite; min-width: 60px; }
+    .rating-loading .score-label { color: transparent; background: var(--score-track); border-radius: 4px; animation: rating-pulse 1.4s ease-in-out infinite; }
+    .rating-loading .score-verdict { color: transparent; background: var(--score-track); border-radius: 6px; animation: rating-pulse 1.4s ease-in-out infinite; }
+    .rating-loading .score-desc { color: transparent; background: var(--score-track); border-radius: 4px; animation: rating-pulse 1.4s ease-in-out infinite; }
+    .rating-loading .score-meta-val { color: transparent; background: var(--score-track); border-radius: 4px; animation: rating-pulse 1.4s ease-in-out infinite; }
+    .rating-loading #scoreRing { stroke: var(--score-track) !important; animation: rating-pulse 1.4s ease-in-out infinite; }
+    .rating-loading .aspect-fill { animation: rating-pulse 1.4s ease-in-out infinite; opacity: 0.4; }
+    .rating-loading .aspect-score { color: transparent !important; background: var(--score-track); border-radius: 4px; animation: rating-pulse 1.4s ease-in-out infinite; }
+    .rating-loading .aspect-stars { color: transparent; background: var(--score-track); border-radius: 3px; animation: rating-pulse 1.4s ease-in-out infinite; }
+    @keyframes rating-pulse { 0%,100%{opacity:0.4} 50%{opacity:0.9} }
+
+    /* Just Updated badge */
+    .just-updated-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 14px; border-radius: 100px;
+      background: rgba(0,201,167,0.12); border: 1px solid rgba(0,201,167,0.3);
+      color: var(--accent); font-size: 0.78rem; font-weight: 700;
+      margin-top: 1rem; animation: badge-pop 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    @keyframes badge-pop { from{opacity:0;transform:scale(0.8)} to{opacity:1;transform:scale(1)} }
+
+    /* Color variants for aspects */
+    .fill-green  { background: linear-gradient(90deg, #00C9A7, #00e5bf); }
+    .fill-blue   { background: linear-gradient(90deg, #0EA5E9, #38bdf8); }
+    .fill-yellow { background: linear-gradient(90deg, #F59E0B, #fbbf24); }
+    .fill-purple { background: linear-gradient(90deg, #8B5CF6, #a78bfa); }
+    .fill-red    { background: linear-gradient(90deg, #ef4444, #f87171); }
+    .fill-teal   { background: linear-gradient(90deg, #00C9A7, #0EA5E9); }
+
+    /* PROS & CONS */
+    .proscons-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px;
+      padding: 2rem; animation: fade-up 0.5s ease 0.2s both;
+    }
+    .proscons-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-top: 0; }
+    .pros-col, .cons-col { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .pc-header { display: flex; align-items: center; gap: 8px; font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .pc-header.pros { color: var(--accent); }
+    .pc-header.cons { color: #fb7185; }
+
+    .pc-item {
+      display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px;
+      border-radius: 12px; font-size: 0.82rem; line-height: 1.5;
+      transition: transform var(--transition);
+    }
+    .pc-item:hover { transform: translateX(4px); }
+    .pros .pc-item { background: var(--pro-bg); border: 1px solid var(--pro-border); }
+    .cons .pc-item { background: var(--con-bg); border: 1px solid var(--con-border); }
+    .pc-dot { width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.7rem; margin-top: 1px; }
+    .pros .pc-dot { background: rgba(0,201,167,0.2); color: var(--accent); }
+    .cons .pc-dot { background: rgba(251,113,133,0.2); color: #fb7185; }
+
+    /* ANALYZED VIDEOS */
+    .videos-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px;
+      padding: 2rem; animation: fade-up 0.5s ease 0.3s both;
+    }
+    .videos-list { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0; }
+    .video-item {
+      display: flex; align-items: center; gap: 1rem; padding: 10px 12px;
+      border-radius: 14px; border: 1px solid var(--border); background: var(--step-bg);
+      cursor: pointer; transition: all var(--transition);
+    }
+    .video-item:hover { border-color: var(--border-hover); transform: translateX(4px); background: rgba(0,201,167,0.04); }
+    .video-thumb { width: 80px; height: 52px; border-radius: 8px; flex-shrink: 0; overflow: hidden; background: linear-gradient(135deg, rgba(0,201,167,0.1), rgba(14,165,233,0.1)); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; position: relative; }
+    .video-play { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.3); opacity: 0; border-radius: 8px; transition: opacity var(--transition); font-size: 1.2rem; }
+    .video-item:hover .video-play { opacity: 1; }
+    .video-info { flex: 1; min-width: 0; }
+    .video-title { font-size: 0.82rem; font-weight: 600; line-height: 1.3; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .video-meta { display: flex; align-items: center; gap: 8px; font-size: 0.72rem; color: var(--text-muted); }
+    .video-channel { color: var(--accent); font-weight: 600; }
+    .video-sentiment { padding: 2px 8px; border-radius: 100px; font-size: 0.68rem; font-weight: 700; }
+    .sent-positive { background: rgba(0,201,167,0.12); color: var(--accent); }
+    .sent-neutral  { background: rgba(251,191,36,0.12);  color: #fbbf24; }
+
+    /* RIGHT COLUMN — STICKY */
+    .right-col { display: flex; flex-direction: column; gap: 1.5rem; position: sticky; top: 84px; }
+
+    /* PRICE COMPARISON */
+    .price-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px;
+      padding: 1.75rem; animation: fade-up 0.5s ease 0.15s both;
+    }
+    .price-platforms { display: flex; flex-direction: column; gap: 0.85rem; margin-bottom: 1.5rem; }
+    .platform-row {
+      display: flex; align-items: center; gap: 1rem; padding: 1rem 1.25rem;
+      border-radius: 16px; border: 1px solid var(--border); cursor: pointer;
+      transition: all var(--transition); position: relative;
+    }
+    .platform-row.best-deal { border-color: var(--border-hover); background: var(--badge-bg); }
+    .platform-row:hover { border-color: var(--border-hover); }
+
+    .best-tag {
+      position: absolute; top: -10px; right: 12px; padding: 2px 10px;
+      background: var(--accent); color: white; border-radius: 100px;
+      font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .platform-logo { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+    .shopee-logo  { background: var(--shopee-bg); }
+    .lazada-logo  { background: var(--lazada-bg); }
+    .platform-name { font-weight: 700; font-size: 0.88rem; }
+    .platform-sub  { font-size: 0.72rem; color: var(--text-muted); }
+    .platform-price { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 900; margin-left: auto; }
+    .platform-arrow { color: var(--text-muted); font-size: 0.8rem; transition: transform var(--transition); }
+    .platform-row:hover .platform-arrow { transform: translateX(4px); color: var(--accent); }
+
+    .savings-banner {
+      display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+      background: var(--badge-bg); border: 1px solid var(--pro-border);
+      border-radius: 12px; font-size: 0.82rem; margin-bottom: 1.5rem;
+    }
+    .savings-banner .save-icon { font-size: 1.1rem; }
+    .savings-banner strong { color: var(--accent); }
+
+    .buy-btn {
+      width: 100%; padding: 14px; border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      border: none; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700; font-size: 1rem; color: white;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: all var(--transition); margin-bottom: 0.75rem;
+    }
+    .buy-btn:hover { opacity: 0.88; transform: translateY(-2px); box-shadow: 0 8px 30px var(--accent-glow-strong); }
+
+    .secondary-btn {
+      width: 100%; padding: 13px; border-radius: 14px;
+      background: transparent; border: 1px solid var(--border);
+      cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 600; font-size: 0.9rem; color: var(--text-secondary);
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: all var(--transition);
+    }
+    .secondary-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* QUICK SPECS */
+    .specs-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 24px; padding: 1.75rem; animation: fade-up 0.5s ease 0.25s both; }
+    .specs-list { display: flex; flex-direction: column; gap: 0; }
+    .spec-row { display: flex; justify-content: space-between; align-items: center; padding: 0.7rem 0; border-bottom: 1px solid var(--border); }
+    .spec-row:last-child { border-bottom: none; }
+    .spec-key { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
+    .spec-val { font-size: 0.82rem; font-weight: 600; text-align: right; }
+
+    /* ASK AI CARD */
+    .ask-ai-card {
+      background: linear-gradient(135deg, rgba(0,201,167,0.1), rgba(14,165,233,0.08));
+      border: 1px solid rgba(0,201,167,0.2); border-radius: 24px;
+      padding: 1.75rem; text-align: center;
+      animation: fade-up 0.5s ease 0.35s both;
+    }
+    .ask-ai-icon { font-size: 2.5rem; margin-bottom: 0.75rem; display: block; }
+    .ask-ai-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 800; margin-bottom: 0.5rem; }
+    .ask-ai-sub { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 1.25rem; }
+    .ask-ai-btn {
+      width: 100%; padding: 12px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      border: none; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700; font-size: 0.88rem; color: white;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: all var(--transition);
+    }
+    .ask-ai-btn:hover { opacity: 0.88; transform: translateY(-1px); box-shadow: 0 6px 20px var(--accent-glow-strong); }
+
+    /* ANIMATIONS */
+    @keyframes fade-up { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    /* FLOATING CHAT */
+    .chat-bubble { position: fixed; bottom: 2rem; right: 2rem; z-index: 999; width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-2)); border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: white; box-shadow: 0 8px 30px var(--accent-glow-strong); transition: all var(--transition); }
+    .chat-bubble:hover { transform: scale(1.1); }
+    .chat-bubble-pulse { position: absolute; inset: -4px; border-radius: 50%; border: 2px solid var(--accent); animation: pulse-ring 2s ease-out infinite; }
+    @keyframes pulse-ring { from{opacity:0.8;transform:scale(1)} to{opacity:0;transform:scale(1.5)} }
+
+    /* RESPONSIVE */
+    @media(max-width:1024px) {
+      .page-content { grid-template-columns: 1fr; }
+      .right-col { position: static; }
+      .proscons-grid { grid-template-columns: 1fr; }
+    }
+    @media(max-width:640px) {
+      .nav-links { display: none; }
+      .product-title { font-size: 1.5rem; }
+      .score-overview { flex-direction: column; text-align: center; }
+      .score-meta { justify-content: center; }
+      .page-content { padding: 1rem; gap: 1rem; }
+      .image-gallery { min-height: 220px; }
+      .image-gallery img { max-height: 220px; object-fit: contain; }
+      .gallery-main { min-height: 220px; }
+      .score-ring-wrap { transform: scale(0.85); }
+      .aspect-row { font-size: 0.85rem; }
+      .right-col { margin-top: 0; }
+      .price-card { padding: 1rem; }
+      .breadcrumb { font-size: 0.75rem; }
+      nav { padding: 0 1rem; }
+      .nav-inner { padding: 0; }
+    }
+  </style>
+  <script src="config.js"></script>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <a href="revalio-home.html" class="nav-logo" style="text-decoration:none;color:inherit;">
+        <div class="nav-logo-icon">✦</div><span style="color:var(--text-primary)">Reva</span><span style="color:var(--accent);margin-left:-8px">lio</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="revalio-home.html">Home</a></li>
+        <li><a href="revalio-search.html">Browse</a></li>
+        <li><a href="revalio-chatbot.html">AI Assistant</a></li>
+      </ul>
+      <div class="nav-right">
+        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+          <span class="theme-icon moon">🌙</span>
+          <span class="theme-icon sun">☀️</span>
+        </button>
+        <button class="nav-cta">Get Started</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- BREADCRUMB -->
+  <div class="breadcrumb-bar">
+    <div class="breadcrumb">
+      <a href="revalio-homepage.html">Home</a>
+      <span class="breadcrumb-sep">›</span>
+      <a href="#">Laptops</a>
+      <span class="breadcrumb-sep">›</span>
+      <span class="breadcrumb-cur">MacBook Air M4</span>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="page-content">
+
+    <!-- LEFT COLUMN -->
+    <div class="left-col">
+
+      <!-- PRODUCT HERO -->
+      <div class="product-hero">
+        <div class="product-hero-image">
+          <span class="product-emoji">💻</span>
+          <span class="hero-badge-tl">Top Rated</span>
+          <button class="hero-wishlist">♡</button>
+          <div class="gallery-dots">
+            <div class="dot active"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+          </div>
+        </div>
+        <div class="product-hero-body">
+          <div class="product-meta-row">
+            <span class="meta-brand">Apple</span>
+            <span class="meta-cat">Laptop</span>
+            <span class="meta-cat">M4 Chip</span>
+            <span class="meta-cat">2025</span>
+          </div>
+          <h1 class="product-title">MacBook Air M4 13‑inch</h1>
+          <p class="product-desc">
+            The thinnest, lightest MacBook Air ever — now powered by Apple's M4 chip. Delivers exceptional performance, all-day battery life, and a stunning Liquid Retina display in a fanless design. The go-to laptop for students who need power and portability without compromise.
+          </p>
+        </div>
+      </div>
+
+      <!-- AI SCORE CARD -->
+      <div class="score-card reveal">
+        <div class="card-title">
+          <div class="card-title-badge">🧠</div>
+          AI Review Analysis
+        </div>
+
+        <!-- Overall score ring -->
+        <div class="score-overview">
+          <div class="score-ring-wrap">
+            <svg class="score-ring-svg" width="120" height="120" viewBox="0 0 120 120">
+              <defs>
+                <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" stop-color="#00C9A7"/>
+                  <stop offset="100%" stop-color="#0EA5E9"/>
+                </linearGradient>
+              </defs>
+              <circle class="score-ring-bg" cx="60" cy="60" r="54"/>
+              <circle class="score-ring-fill" id="scoreRing" cx="60" cy="60" r="54"/>
+            </svg>
+            <div class="score-ring-center">
+              <div class="score-big">9.1</div>
+              <div class="score-max">/10</div>
+              <div class="score-label">Excellent</div>
+            </div>
+          </div>
+          <div class="score-summary">
+            <div class="score-verdict">Outstanding Overall Performance</div>
+            <p class="score-desc">Based on 47 YouTube reviews totaling over 11 hours of content. Reviewers consistently praise performance, display quality, and battery life. Value for money is the most common concern.</p>
+            <div class="score-meta">
+              <div class="score-meta-item">
+                <div class="score-meta-val">47</div>
+                <div class="score-meta-label">Reviews</div>
+              </div>
+              <div class="score-meta-item">
+                <div class="score-meta-val">11h</div>
+                <div class="score-meta-label">Analyzed</div>
+              </div>
+              <div class="score-meta-item">
+                <div class="score-meta-val">94%</div>
+                <div class="score-meta-label">Positive</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Aspect scores -->
+        <div class="aspects-grid" id="aspects-grid">
+          <div class="aspect-row">
+            <div class="aspect-label"><span class="aspect-icon">⚡</span>Performance</div>
+            <div class="aspect-bar-wrap">
+              <div class="aspect-track"><div class="aspect-fill fill-green" data-width="95"></div></div>
+              <div class="aspect-stars">★★★★★ 9.5</div>
+            </div>
+            <div class="aspect-score" style="color:#00C9A7">9.5</div>
+          </div>
+          <div class="aspect-row">
+            <div class="aspect-label"><span class="aspect-icon">🖥️</span>Display</div>
+            <div class="aspect-bar-wrap">
+              <div class="aspect-track"><div class="aspect-fill fill-blue" data-width="90"></div></div>
+              <div class="aspect-stars">★★★★★ 9.0</div>
+            </div>
+            <div class="aspect-score" style="color:#0EA5E9">9.0</div>
+          </div>
+          <div class="aspect-row">
+            <div class="aspect-label"><span class="aspect-icon">🔋</span>Battery</div>
+            <div class="aspect-bar-wrap">
+              <div class="aspect-track"><div class="aspect-fill fill-teal" data-width="88"></div></div>
+              <div class="aspect-stars">★★★★★ 8.8</div>
+            </div>
+            <div class="aspect-score" style="color:#00C9A7">8.8</div>
+          </div>
+          <div class="aspect-row">
+            <div class="aspect-label"><span class="aspect-icon">🏗️</span>Build Quality</div>
+            <div class="aspect-bar-wrap">
+              <div class="aspect-track"><div class="aspect-fill fill-purple" data-width="93"></div></div>
+              <div class="aspect-stars">★★★★★ 9.3</div>
+            </div>
+            <div class="aspect-score" style="color:#8B5CF6">9.3</div>
+          </div>
+          <div class="aspect-row">
+            <div class="aspect-label"><span class="aspect-icon">⌨️</span>Keyboard</div>
+            <div class="aspect-bar-wrap">
+              <div class="aspect-track"><div class="aspect-fill fill-blue" data-width="87"></div></div>
+              <div class="aspect-stars">★★★★½ 8.7</div>
+            </div>
+            <div class="aspect-score" style="color:#0EA5E9">8.7</div>
+          </div>
+          <div class="aspect-row">
+            <div class="aspect-label"><span class="aspect-icon">💰</span>Value</div>
+            <div class="aspect-bar-wrap">
+              <div class="aspect-track"><div class="aspect-fill fill-yellow" data-width="72"></div></div>
+              <div class="aspect-stars">★★★★☆ 7.2</div>
+            </div>
+            <div class="aspect-score" style="color:#F59E0B">7.2</div>
+          </div>
+          <div class="aspect-row">
+            <div class="aspect-label"><span class="aspect-icon">🔌</span>Ports</div>
+            <div class="aspect-bar-wrap">
+              <div class="aspect-track"><div class="aspect-fill fill-red" data-width="65"></div></div>
+              <div class="aspect-stars">★★★½☆ 6.5</div>
+            </div>
+            <div class="aspect-score" style="color:#ef4444">6.5</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PROS & CONS -->
+      <div class="proscons-card reveal">
+        <div class="card-title">
+          <div class="card-title-badge">📋</div>
+          Pros & Cons from YouTube Reviews
+        </div>
+        <div class="proscons-grid">
+          <div class="pros-col">
+            <div class="pc-header pros">👍 What reviewers love</div>
+            <div class="pc-item">
+              <div class="pc-dot">✓</div>
+              <span>M4 chip handles everything effortlessly — video editing, coding, even light gaming</span>
+            </div>
+            <div class="pc-item">
+              <div class="pc-dot">✓</div>
+              <span>Insane battery life — reviewers consistently report 14–18 hours of real use</span>
+            </div>
+            <div class="pc-item">
+              <div class="pc-dot">✓</div>
+              <span>Fanless design means completely silent — great for library and class use</span>
+            </div>
+            <div class="pc-item">
+              <div class="pc-dot">✓</div>
+              <span>Gorgeous Liquid Retina display with excellent color accuracy</span>
+            </div>
+            <div class="pc-item">
+              <div class="pc-dot">✓</div>
+              <span>Premium aluminum build feels rock solid and looks stunning</span>
+            </div>
+          </div>
+          <div class="cons-col">
+            <div class="pc-header cons">👎 Common complaints</div>
+            <div class="pc-item">
+              <div class="pc-dot">✗</div>
+              <span>Expensive compared to Windows alternatives with similar specs</span>
+            </div>
+            <div class="pc-item">
+              <div class="pc-dot">✗</div>
+              <span>Only 2 USB-C ports — dongles required for most peripherals</span>
+            </div>
+            <div class="pc-item">
+              <div class="pc-dot">✗</div>
+              <span>No HDMI or SD card slot — frustrating for photographers</span>
+            </div>
+            <div class="pc-item">
+              <div class="pc-dot">✗</div>
+              <span>Base 8GB RAM can feel limited for heavy multitasking</span>
+            </div>
+            <div class="pc-item">
+              <div class="pc-dot">✗</div>
+              <span>Webcam is decent but not class-leading for video calls</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANALYZED VIDEOS -->
+      <div class="videos-card reveal">
+        <div class="card-title">
+          <div class="card-title-badge">▶️</div>
+          Analyzed YouTube Reviews
+          <span style="font-family:'Plus Jakarta Sans',sans-serif;font-size:0.75rem;font-weight:500;color:var(--text-muted);margin-left:auto;">47 videos</span>
+        </div>
+        <div class="videos-list">
+          <div class="video-item">
+            <div class="video-thumb">💻<div class="video-play">▶</div></div>
+            <div class="video-info">
+              <div class="video-title">M4 MacBook Air Review: Too Easy!</div>
+              <div class="video-meta">
+                <span class="video-channel">MKBHD</span>
+                <span>·</span><span>3.2M views</span>
+                <span>·</span><span class="video-sentiment sent-positive">Positive</span>
+              </div>
+            </div>
+          </div>
+          <div class="video-item">
+            <div class="video-thumb">💻<div class="video-play">▶</div></div>
+            <div class="video-info">
+              <div class="video-title">M4 MacBook Air Review — 6 Months Later</div>
+              <div class="video-meta">
+                <span class="video-channel">Dave2D</span>
+                <span>·</span><span>1.8M views</span>
+                <span>·</span><span class="video-sentiment sent-positive">Positive</span>
+              </div>
+            </div>
+          </div>
+          <div class="video-item">
+            <div class="video-thumb">💻<div class="video-play">▶</div></div>
+            <div class="video-info">
+              <div class="video-title">MacBook Air M4 — Should You Buy It in 2025?</div>
+              <div class="video-meta">
+                <span class="video-channel">Linus Tech Tips</span>
+                <span>·</span><span>2.1M views</span>
+                <span>·</span><span class="video-sentiment sent-positive">Positive</span>
+              </div>
+            </div>
+          </div>
+          <div class="video-item">
+            <div class="video-thumb">💻<div class="video-play">▶</div></div>
+            <div class="video-info">
+              <div class="video-title">Honest MacBook Air M4 Review — The Bad Parts</div>
+              <div class="video-meta">
+                <span class="video-channel">UnboxTherapy</span>
+                <span>·</span><span>980K views</span>
+                <span>·</span><span class="video-sentiment sent-neutral">Neutral</span>
+              </div>
+            </div>
+          </div>
+          <div class="video-item">
+            <div class="video-thumb">💻<div class="video-play">▶</div></div>
+            <div class="video-info">
+              <div class="video-title">MacBook Air M4 vs ASUS VivoBook — Student's Choice?</div>
+              <div class="video-meta">
+                <span class="video-channel">JerryRigEverything</span>
+                <span>·</span><span>1.1M views</span>
+                <span>·</span><span class="video-sentiment sent-positive">Positive</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="right-col">
+
+      <!-- PRICE COMPARISON -->
+      <div class="price-card">
+        <div class="card-title">
+          <div class="card-title-badge">💰</div>
+          Price Comparison
+        </div>
+
+        <div class="price-platforms">
+          <div class="platform-row best-deal">
+            <span class="best-tag">Best Deal</span>
+            <div class="platform-logo shopee-logo">🛍️</div>
+            <div>
+              <div class="platform-name">Shopee</div>
+              <div class="platform-sub">Free shipping · In stock</div>
+            </div>
+            <div class="platform-price">RM 5,199</div>
+            <span class="platform-arrow">→</span>
+          </div>
+          <div class="platform-row">
+            <div class="platform-logo lazada-logo">📦</div>
+            <div>
+              <div class="platform-name">Lazada</div>
+              <div class="platform-sub">Free shipping · In stock</div>
+            </div>
+            <div class="platform-price">RM 5,349</div>
+            <span class="platform-arrow">→</span>
+          </div>
+        </div>
+
+        <div class="savings-banner">
+          <span class="save-icon">💡</span>
+          <span>Buy on Shopee and <strong>save RM 150</strong> compared to Lazada</span>
+        </div>
+
+        <button class="buy-btn">🛍️ Buy on Shopee — RM 5,199</button>
+        <button class="secondary-btn">📦 View on Lazada</button>
+      </div>
+
+      <!-- QUICK SPECS -->
+      <div class="specs-card">
+        <div class="card-title">
+          <div class="card-title-badge">📄</div>
+          Quick Specs
+        </div>
+        <div class="specs-list">
+          <div class="spec-row"><span class="spec-key">Chip</span><span class="spec-val">Apple M4</span></div>
+          <div class="spec-row"><span class="spec-key">RAM</span><span class="spec-val">16GB Unified</span></div>
+          <div class="spec-row"><span class="spec-key">Storage</span><span class="spec-val">256GB SSD</span></div>
+          <div class="spec-row"><span class="spec-key">Display</span><span class="spec-val">13.6" Liquid Retina</span></div>
+          <div class="spec-row"><span class="spec-key">Battery</span><span class="spec-val">Up to 18 hours</span></div>
+          <div class="spec-row"><span class="spec-key">Weight</span><span class="spec-val">1.24 kg</span></div>
+          <div class="spec-row"><span class="spec-key">Ports</span><span class="spec-val">2× USB-C, MagSafe</span></div>
+          <div class="spec-row"><span class="spec-key">OS</span><span class="spec-val">macOS Sequoia</span></div>
+        </div>
+      </div>
+
+      <!-- ASK AI -->
+      <div class="ask-ai-card">
+        <span class="ask-ai-icon">✦</span>
+        <div class="ask-ai-title">Not sure if this is right for you?</div>
+        <p class="ask-ai-sub">Ask Revalio AI — tell it your budget, use case, and needs. It'll compare this with other options and give you a personalized verdict.</p>
+        <button class="ask-ai-btn">✦ Ask AI About This Product</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- FLOATING CHAT BUBBLE -->
+  <button class="chat-bubble">
+    <div class="chat-bubble-pulse"></div>
+    ✦
+  </button>
+
+  <script>
+    // ─── CONFIG ───────────────────────────────────────────────────────────────
+    const API_BASE = window.REVALIO_API_BASE || 'http://localhost:8000';
+
+    // ─── HELPERS ──────────────────────────────────────────────────────────────
+    function getProductIdFromURL() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('id');
+    }
+
+    function formatRM(price) {
+      if (!price || price === 0) return 'N/A';
+      return 'RM ' + price.toLocaleString('en-MY', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    }
+
+    function getCategoryEmoji(category) {
+      const map = { laptops: '💻', phones: '📱', monitors: '🖥️', keyboards: '⌨️' };
+      return map[(category || '').toLowerCase()] || '📦';
+    }
+
+    function getAspectConfig(aspectKey) {
+      const configs = {
+        performance:   { icon: '⚡', label: 'Performance',  fillClass: 'fill-green',  color: '#00C9A7' },
+        battery:       { icon: '🔋', label: 'Battery',       fillClass: 'fill-teal',   color: '#00C9A7' },
+        display:       { icon: '🖥️', label: 'Display',       fillClass: 'fill-blue',   color: '#0EA5E9' },
+        build_quality: { icon: '🏗️', label: 'Build Quality', fillClass: 'fill-purple', color: '#8B5CF6' },
+        build:         { icon: '🏗️', label: 'Build Quality', fillClass: 'fill-purple', color: '#8B5CF6' },
+        value:         { icon: '💰', label: 'Value',          fillClass: 'fill-yellow', color: '#F59E0B' },
+        value_for_money:{ icon: '💰', label: 'Value',         fillClass: 'fill-yellow', color: '#F59E0B' },
+        keyboard:      { icon: '⌨️', label: 'Keyboard',      fillClass: 'fill-blue',   color: '#0EA5E9' },
+        switches:      { icon: '🔘', label: 'Switches',      fillClass: 'fill-green',  color: '#00C9A7' },
+        sound:         { icon: '🔊', label: 'Sound',          fillClass: 'fill-purple', color: '#8B5CF6' },
+        audio:         { icon: '🔊', label: 'Audio',          fillClass: 'fill-purple', color: '#8B5CF6' },
+        camera:        { icon: '📷', label: 'Camera',         fillClass: 'fill-blue',   color: '#0EA5E9' },
+        ports:         { icon: '🔌', label: 'Ports',          fillClass: 'fill-red',    color: '#ef4444' },
+        connectivity:  { icon: '📶', label: 'Connectivity',  fillClass: 'fill-teal',   color: '#00C9A7' },
+        software:      { icon: '💾', label: 'Software',      fillClass: 'fill-blue',   color: '#0EA5E9' },
+        thermals:      { icon: '🌡️', label: 'Thermals',      fillClass: 'fill-red',    color: '#ef4444' },
+        cooling:       { icon: '❄️', label: 'Cooling',       fillClass: 'fill-blue',   color: '#0EA5E9' },
+        typing:        { icon: '✍️', label: 'Typing Feel',   fillClass: 'fill-green',  color: '#00C9A7' },
+        accuracy:      { icon: '🎯', label: 'Accuracy',      fillClass: 'fill-green',  color: '#00C9A7' },
+        refresh_rate:  { icon: '🔄', label: 'Refresh Rate',  fillClass: 'fill-blue',   color: '#0EA5E9' },
+        color_accuracy:{ icon: '🎨', label: 'Color Accuracy',fillClass: 'fill-purple', color: '#8B5CF6' },
+        response_time: { icon: '⚡', label: 'Response Time', fillClass: 'fill-yellow', color: '#F59E0B' },
+      };
+      const key = (aspectKey || '').toLowerCase().replace(/ /g, '_');
+      return configs[key] || { icon: '📊', label: aspectKey.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()), fillClass: 'fill-green', color: '#00C9A7' };
+    }
+
+    function getScoreLabel(score) {
+      if (score >= 9.0) return 'Exceptional';
+      if (score >= 8.0) return 'Excellent';
+      if (score >= 7.0) return 'Very Good';
+      if (score >= 6.0) return 'Good';
+      if (score >= 5.0) return 'Average';
+      return 'Below Average';
+    }
+
+    function getScoreVerdict(score, name) {
+      if (score >= 8.5) return `Outstanding Choice`;
+      if (score >= 7.5) return `Highly Recommended`;
+      if (score >= 6.5) return `Solid Performer`;
+      if (score >= 5.5) return `Decent Option`;
+      return `Has Tradeoffs`;
+    }
+
+    function starsFromScore(score) {
+      const full = Math.floor(score / 2);
+      const half = (score / 2 - full) >= 0.5 ? 1 : 0;
+      const empty = 5 - full - half;
+      return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(empty);
+    }
+
+    // ─── RENDER ───────────────────────────────────────────────────────────────
+    function renderProduct(p) {
+      document.title = `${p.name} — Revalio`;
+
+      const emoji = getCategoryEmoji(p.category);
+      const catLabel = p.category ? p.category.charAt(0).toUpperCase() + p.category.slice(1, -1) : 'Product';
+
+      // --- Hero image ---
+      const heroImgContainer = document.querySelector('.product-hero-image');
+      if (p.image_url) {
+        const img = document.createElement('img');
+        img.src = window.fixImageUrl(p.image_url);
+        img.alt = p.name;
+        img.style.cssText = 'max-height:280px;max-width:90%;object-fit:contain;transition:transform 0.5s ease;';
+        img.onmouseover = () => img.style.transform = 'scale(1.05)';
+        img.onmouseout  = () => img.style.transform = 'scale(1)';
+        const emojiEl = heroImgContainer.querySelector('.product-emoji');
+        if (emojiEl) emojiEl.replaceWith(img);
+      } else {
+        const emojiEl = heroImgContainer.querySelector('.product-emoji');
+        if (emojiEl) emojiEl.textContent = emoji;
+      }
+
+      // Badge — Top Rated if score >= 8.0
+      const badge = document.querySelector('.hero-badge-tl');
+      if (p.overall_rating >= 8.0) {
+        badge.textContent = '⭐ Top Rated';
+        badge.style.display = '';
+      } else if (p.overall_rating >= 7.0) {
+        badge.textContent = '👍 Recommended';
+        badge.style.display = '';
+      } else {
+        badge.style.display = 'none';
+      }
+
+      // --- Product meta & title ---
+      const metaRow = document.querySelector('.product-meta-row');
+      metaRow.innerHTML = `
+        <span class="meta-brand">${p.brand || ''}</span>
+        <span class="meta-cat">${catLabel}</span>
+        <span class="meta-cat">${p.category === 'laptops' ? 'Laptop' : catLabel}</span>
+      `;
+
+      document.querySelector('.product-title').textContent = p.name;
+      document.querySelector('.product-desc').textContent =
+        `AI-powered rating based on ${p.total_reviews_analyzed || 0} YouTube reviews. ` +
+        `Prices checked on Shopee and Lazada. Last updated: ${p.last_updated_label || 'recently'}.`;
+
+      // --- Breadcrumb ---
+      const breadcrumb = document.querySelector('.breadcrumb');
+      breadcrumb.innerHTML = `
+        <a href="revalio-homepage.html">Home</a>
+        <span class="breadcrumb-sep">›</span>
+        <a href="revalio-search.html?category=${p.category}">${p.category ? p.category.charAt(0).toUpperCase() + p.category.slice(1) : 'Products'}</a>
+        <span class="breadcrumb-sep">›</span>
+        <span class="breadcrumb-cur">${p.name}</span>
+      `;
+
+      // --- Score ring ---
+      const rating = p.overall_rating || 0;
+      document.querySelector('.score-big').textContent = rating.toFixed(1);
+      document.querySelector('.score-label').textContent = getScoreLabel(rating);
+      document.querySelector('.score-verdict').textContent = getScoreVerdict(rating, p.name);
+
+      const videoCount = p.total_reviews_analyzed || 0;
+      const confidencePct = p.confidence_score ? Math.round(p.confidence_score * 100) : '–';
+      document.querySelector('.score-desc').textContent =
+        `Based on ${videoCount} YouTube review${videoCount !== 1 ? 's' : ''} analyzed by the Revalio AI pipeline. ` +
+        `BERT confidence score: ${confidencePct}%. Prices from Shopee and Lazada are compared in real time.`;
+
+      const metaItems = document.querySelectorAll('.score-meta-item');
+      if (metaItems[0]) { metaItems[0].querySelector('.score-meta-val').textContent = videoCount; }
+      if (metaItems[1]) {
+        metaItems[1].querySelector('.score-meta-val').textContent = confidencePct + '%';
+        metaItems[1].querySelector('.score-meta-label').textContent = 'Confidence';
+      }
+      if (metaItems[2]) {
+        const positiveLabel = rating >= 7 ? 'Positive' : rating >= 5 ? 'Mixed' : 'Critical';
+        metaItems[2].querySelector('.score-meta-val').textContent = positiveLabel;
+        metaItems[2].querySelector('.score-meta-label').textContent = 'Verdict';
+      }
+
+      // --- Animate score ring ---
+      setTimeout(() => {
+        const ring = document.getElementById('scoreRing');
+        const circumference = 339.3;
+        ring.style.strokeDashoffset = circumference - ((rating / 10) * circumference);
+      }, 300);
+
+      // --- Aspect scores ---
+      const aspects = p.aspect_scores || {};
+      const aspectsGrid = document.getElementById('aspects-grid');
+      aspectsGrid.innerHTML = '';
+
+      if (Object.keys(aspects).length === 0) {
+        aspectsGrid.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;">No aspect scores available.</p>';
+      } else {
+        Object.entries(aspects).forEach(([key, val], i) => {
+          const cfg = getAspectConfig(key);
+          const pct = Math.round((val / 10) * 100);
+          const stars = starsFromScore(val);
+          const row = document.createElement('div');
+          row.className = 'aspect-row';
+          row.innerHTML = `
+            <div class="aspect-label"><span class="aspect-icon">${cfg.icon}</span>${cfg.label}</div>
+            <div class="aspect-bar-wrap">
+              <div class="aspect-track"><div class="aspect-fill ${cfg.fillClass}" data-width="${pct}" style="width:0%"></div></div>
+              <div class="aspect-stars">${stars} ${val.toFixed(1)}</div>
+            </div>
+            <div class="aspect-score" style="color:${cfg.color}">${val.toFixed(1)}</div>
+          `;
+          aspectsGrid.appendChild(row);
+          // Staggered bar animation
+          setTimeout(() => {
+            row.querySelector('.aspect-fill').style.width = pct + '%';
+          }, 400 + i * 120);
+        });
+      }
+
+      // --- Pros & Cons ---
+      const pros = Array.isArray(p.pros) ? p.pros : [];
+      const cons = Array.isArray(p.cons) ? p.cons : [];
+      const prosCol = document.querySelector('.pros-col');
+      const consCol = document.querySelector('.cons-col');
+
+      prosCol.innerHTML = '<div class="pc-header pros">👍 What reviewers love</div>';
+      if (pros.length === 0) {
+        prosCol.innerHTML += '<p style="color:var(--text-muted);font-size:0.82rem;">No pros data available.</p>';
+      } else {
+        pros.forEach(text => {
+          prosCol.innerHTML += `<div class="pc-item"><div class="pc-dot">✓</div><span>${text}</span></div>`;
+        });
+      }
+
+      consCol.innerHTML = '<div class="pc-header cons">👎 Common complaints</div>';
+      if (cons.length === 0) {
+        consCol.innerHTML += '<p style="color:var(--text-muted);font-size:0.82rem;">No cons data available.</p>';
+      } else {
+        cons.forEach(text => {
+          consCol.innerHTML += `<div class="pc-item"><div class="pc-dot">✗</div><span>${text}</span></div>`;
+        });
+      }
+
+      // --- Price comparison ---
+      const shopee = p.shopee_price;
+      const lazada = p.lazada_price;
+      const shopeeURL = p.shopee_url || '#';
+      const lazadaURL = p.lazada_url || '#';
+
+      // Determine best deal
+      let cheaperPlatform = null;
+      if (shopee && lazada) cheaperPlatform = shopee <= lazada ? 'shopee' : 'lazada';
+      else if (shopee) cheaperPlatform = 'shopee';
+      else if (lazada) cheaperPlatform = 'lazada';
+
+      const savings = (shopee && lazada) ? Math.abs(shopee - lazada) : 0;
+      const cheaperName = cheaperPlatform === 'shopee' ? 'Shopee' : 'Lazada';
+      const pricePlatforms = document.querySelector('.price-platforms');
+
+      const shopeeRow = pricePlatforms.querySelector('.platform-row:first-child') ||
+                        pricePlatforms.children[0];
+      const lazadaRow = pricePlatforms.querySelector('.platform-row:last-child') ||
+                        pricePlatforms.children[1];
+
+      // Shopee row
+      shopeeRow.className = 'platform-row' + (cheaperPlatform === 'shopee' ? ' best-deal' : '');
+      shopeeRow.onclick = () => { if (shopeeURL !== '#') window.open(shopeeURL, '_blank'); };
+      const bestTagShopee = shopeeRow.querySelector('.best-tag');
+      if (bestTagShopee) bestTagShopee.remove();
+      if (cheaperPlatform === 'shopee') {
+        const tag = document.createElement('span');
+        tag.className = 'best-tag'; tag.textContent = 'Best Deal';
+        shopeeRow.prepend(tag);
+      }
+      shopeeRow.querySelector('.platform-price').textContent = shopee ? formatRM(shopee) : 'N/A';
+
+      // Lazada row
+      lazadaRow.className = 'platform-row' + (cheaperPlatform === 'lazada' ? ' best-deal' : '');
+      lazadaRow.onclick = () => { if (lazadaURL !== '#') window.open(lazadaURL, '_blank'); };
+      const bestTagLazada = lazadaRow.querySelector('.best-tag');
+      if (bestTagLazada) bestTagLazada.remove();
+      if (cheaperPlatform === 'lazada') {
+        const tag = document.createElement('span');
+        tag.className = 'best-tag'; tag.textContent = 'Best Deal';
+        lazadaRow.prepend(tag);
+      }
+      lazadaRow.querySelector('.platform-price').textContent = lazada ? formatRM(lazada) : 'N/A';
+
+      // Savings banner
+      const savingsBanner = document.querySelector('.savings-banner');
+      if (savings > 0) {
+        savingsBanner.style.display = '';
+        savingsBanner.querySelector('span:last-child').innerHTML =
+          `Buy on ${cheaperName} and <strong>save ${formatRM(savings)}</strong> compared to ${cheaperPlatform === 'shopee' ? 'Lazada' : 'Shopee'}`;
+      } else {
+        savingsBanner.style.display = 'none';
+      }
+
+      // Buy buttons
+      const buyBtn = document.querySelector('.buy-btn');
+      const secBtn = document.querySelector('.secondary-btn');
+
+      if (cheaperPlatform === 'shopee' || (!cheaperPlatform && shopee)) {
+        buyBtn.textContent = `🛍️ Buy on Shopee — ${formatRM(shopee)}`;
+        buyBtn.onclick = () => window.open(shopeeURL, '_blank');
+        secBtn.textContent = `📦 View on Lazada${lazada ? ' — ' + formatRM(lazada) : ''}`;
+        secBtn.onclick = () => window.open(lazadaURL, '_blank');
+      } else if (cheaperPlatform === 'lazada') {
+        buyBtn.textContent = `📦 Buy on Lazada — ${formatRM(lazada)}`;
+        buyBtn.onclick = () => window.open(lazadaURL, '_blank');
+        secBtn.textContent = `🛍️ View on Shopee${shopee ? ' — ' + formatRM(shopee) : ''}`;
+        secBtn.onclick = () => window.open(shopeeURL, '_blank');
+      } else {
+        buyBtn.textContent = 'Price Unavailable';
+        buyBtn.disabled = true;
+        secBtn.style.display = 'none';
+      }
+
+      // --- Videos ---
+      renderVideos(p.id);
+
+      // --- Ask AI button ---
+      document.querySelector('.ask-ai-btn').onclick = () => {
+        window.location.href = `revalio-chatbot.html?product=${encodeURIComponent(p.name)}`;
+      };
+
+      // --- Refresh rating button ---
+      setupRefreshButton(p.id, p.is_updating);
+
+      // --- Quick specs: hide (no specs in API) or replace with rating meta ---
+      const specsCard = document.querySelector('.specs-card');
+if (specsCard) {
+  const specsList = specsCard.querySelector('.specs-list');
+  const specs = p.specs || {};
+  const specsEntries = Object.entries(specs);
+
+  if (specsEntries.length > 0) {
+    specsList.innerHTML = specsEntries.map(([key, val]) => `
+      <div class="spec-row">
+        <span class="spec-key">${key}</span>
+        <span class="spec-val">${val}</span>
+      </div>
+    `).join('');
+  } else {
+    specsList.innerHTML = `
+      <div class="spec-row"><span class="spec-key">Category</span><span class="spec-val">${p.category || '–'}</span></div>
+      <div class="spec-row"><span class="spec-key">Brand</span><span class="spec-val">${p.brand || '–'}</span></div>
+      <div class="spec-row"><span class="spec-key">AI Rating</span><span class="spec-val">${rating.toFixed(1)} / 10</span></div>
+      <div class="spec-row"><span class="spec-key">Reviews Analyzed</span><span class="spec-val">${videoCount}</span></div>
+      <div class="spec-row"><span class="spec-key">Shopee Price</span><span class="spec-val">${formatRM(shopee)}</span></div>
+      <div class="spec-row"><span class="spec-key">Lazada Price</span><span class="spec-val">${formatRM(lazada)}</span></div>
+    `;
+    }
+  }
+}
+
+    // ─── VIDEOS ───────────────────────────────────────────────────────────────
+    async function renderVideos(productId) {
+  const videoCard = document.querySelector('.videos-card');
+  if (!videoCard) return;
+
+  const videosList = videoCard.querySelector('.videos-list');
+  const countLabel = videoCard.querySelector('span[style]');
+
+  // Show loading state
+  videosList.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;padding:0.5rem 0;">Loading videos...</p>';
+
+  try {
+    const res = await fetch(`${API_BASE}/api/products/${productId}/videos`);
+    const data = await res.json();
+    const videos = data.videos || [];
+
+    // Update count label
+    if (countLabel) countLabel.textContent = `${videos.length} video${videos.length !== 1 ? 's' : ''}`;
+
+    if (videos.length === 0) {
+      videosList.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;">No analyzed videos available.</p>';
+      return;
+    }
+videosList.innerHTML = videos.slice(0, 5).map(v => {
+    
+      // Format view count
+      const views = v.view_count >= 1000000
+        ? (v.view_count / 1000000).toFixed(1) + 'M'
+        : v.view_count >= 1000
+        ? Math.round(v.view_count / 1000) + 'K'
+        : v.view_count;
+
+      // Sentiment — fallback to Positive if score is 0 (data not stored)
+      const sentimentScore = v.sentiment_score || 0;
+      let sentiment, sentClass;
+      if (sentimentScore === 0) {
+        // Score not stored — derive from classification
+        sentiment = 'Analyzed';
+        sentClass = 'sent-positive';
+      } else if (sentimentScore >= 0.6) {
+        sentiment = 'Positive';
+        sentClass = 'sent-positive';
+      } else if (sentimentScore >= 0.4) {
+        sentiment = 'Neutral';
+        sentClass = 'sent-neutral';
+      } else {
+        sentiment = 'Critical';
+        sentClass = 'sent-neutral';
+      }
+
+      // Category emoji for thumbnail
+      const emoji = getCategoryEmoji(document.querySelector('.meta-cat')?.textContent || '');
+
+      return `
+        <div class="video-item" onclick="window.open('${v.youtube_url}', '_blank')">
+          <div class="video-thumb">
+            ${emoji}
+            <div class="video-play">▶</div>
+          </div>
+          <div class="video-info">
+            <div class="video-title">${v.title}</div>
+            <div class="video-meta">
+              <span class="video-channel">${v.channel}</span>
+              <span>·</span>
+              <span>${views} views</span>
+              <span>·</span>
+              <span class="video-sentiment ${sentClass}">${sentiment}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+
+  } catch (err) {
+    videosList.innerHTML = '<p style="color:var(--text-muted);font-size:0.85rem;">Could not load videos.</p>';
+    console.error('Videos fetch error:', err);
+  }
+}
+
+    // ─── REFRESH BUTTON ───────────────────────────────────────────────────────
+    // ── Rating loading state ─────────────────────────────────────
+    function startRatingLoadingState() {
+      const scoreCard = document.querySelector('.score-card');
+      if (scoreCard) scoreCard.classList.add('rating-loading');
+      // Reset ring to empty while loading
+      const ring = document.getElementById('scoreRing');
+      if (ring) ring.style.strokeDashoffset = '339.3';
+    }
+
+    function stopRatingLoadingState() {
+      const scoreCard = document.querySelector('.score-card');
+      if (scoreCard) scoreCard.classList.remove('rating-loading');
+    }
+
+    function showJustUpdatedBadge() {
+      // Remove existing badge if any
+      const old = document.getElementById('just-updated-badge');
+      if (old) old.remove();
+      const badge = document.createElement('div');
+      badge.id = 'just-updated-badge';
+      badge.className = 'just-updated-badge';
+      badge.innerHTML = '✅ Just Updated';
+      document.querySelector('.score-card').insertBefore(badge, document.getElementById('refresh-btn'));
+      // Auto-fade after 8 seconds
+      setTimeout(() => {
+        badge.style.transition = 'opacity 1s ease';
+        badge.style.opacity = '0';
+        setTimeout(() => badge.remove(), 1000);
+      }, 8000);
+    }
+
+    // ── Polling: check if update finished ────────────────────────
+    let pollingInterval = null;
+
+    function startPolling(productId) {
+      if (pollingInterval) return; // already polling
+      pollingInterval = setInterval(async () => {
+        try {
+          const res = await fetch(`${API_BASE}/api/products/${productId}`);
+          if (!res.ok) return;
+          const data = await res.json();
+          const product = data.product || (Array.isArray(data.products) ? data.products[0] : null);
+          if (!product) return;
+          // If no longer updating → refresh UI with new data
+          if (!product.is_updating) {
+            clearInterval(pollingInterval);
+            pollingInterval = null;
+            stopRatingLoadingState();
+            renderProduct(product);
+            setupRefreshButton(product.id, false);
+            showJustUpdatedBadge();
+          }
+        } catch (e) { /* silently ignore poll errors */ }
+      }, 5000); // poll every 5 seconds
+    }
+
+    function setupRefreshButton(productId, isUpdating) {
+      let refreshBtn = document.getElementById('refresh-btn');
+      if (!refreshBtn) {
+        refreshBtn = document.createElement('button');
+        refreshBtn.id = 'refresh-btn';
+        refreshBtn.style.cssText = `
+          margin-top: 1.5rem; width: 100%; padding: 12px; border-radius: 14px;
+          background: transparent; border: 1px solid var(--border);
+          cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;
+          font-weight: 600; font-size: 0.88rem; color: var(--text-secondary);
+          display: flex; align-items: center; justify-content: center; gap: 8px;
+          transition: all 0.3s;
+        `;
+        refreshBtn.onmouseover = () => { refreshBtn.style.borderColor = 'var(--accent)'; refreshBtn.style.color = 'var(--accent)'; };
+        refreshBtn.onmouseout  = () => { refreshBtn.style.borderColor = 'var(--border)'; refreshBtn.style.color = 'var(--text-secondary)'; };
+        document.querySelector('.score-card').appendChild(refreshBtn);
+      }
+
+      if (isUpdating) {
+        refreshBtn.textContent = '⏳ Update in progress...';
+        refreshBtn.disabled = true;
+        // If already updating on page load, start loading state + poll
+        startRatingLoadingState();
+        startPolling(productId);
+      } else {
+        refreshBtn.textContent = '🔄 Refresh Rating';
+        refreshBtn.disabled = false;
+        refreshBtn.onclick = async () => {
+          refreshBtn.textContent = '⏳ Queued! Updating in background...';
+          refreshBtn.disabled = true;
+          // Immediately trigger loading state on UI
+          startRatingLoadingState();
+          try {
+            const res = await fetch(`${API_BASE}/api/refresh/${productId}`, { method: 'POST' });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.detail || 'Request failed');
+            // Start polling for completion
+            startPolling(productId);
+          } catch (err) {
+            stopRatingLoadingState();
+            refreshBtn.textContent = '❌ Failed to queue. Try again.';
+            refreshBtn.disabled = false;
+            console.error('Refresh error:', err);
+          }
+        };
+      }
+    }
+
+    // ─── LOADING / ERROR STATES ───────────────────────────────────────────────
+    function showLoading() {
+      document.querySelector('.product-title').textContent = 'Loading...';
+      document.querySelector('.product-desc').textContent = 'Fetching product data from Revalio API...';
+    }
+
+    function showError(msg) {
+      document.querySelector('.product-title').textContent = 'Product not found';
+      document.querySelector('.product-desc').textContent = msg || 'Could not load this product. Please go back and try again.';
+      document.querySelector('.score-big').textContent = '–';
+      document.querySelector('.score-label').textContent = '';
+    }
+
+    // ─── MAIN FETCH ───────────────────────────────────────────────────────────
+    async function loadProduct() {
+      const productId = getProductIdFromURL();
+
+      if (!productId) {
+        // No ID in URL — fallback: try to load first product from /api/products
+        // Useful for direct demo without URL params
+        try {
+          const res = await fetch(`${API_BASE}/api/products`);
+          const data = await res.json();
+          const products = Array.isArray(data) ? data : data.products || [];
+          if (products.length > 0) {
+            renderProduct(products[0]);
+          } else {
+            showError('No products found in the database.');
+          }
+        } catch (err) {
+          showError('Could not connect to the Revalio backend at ' + API_BASE + '. Make sure it is running.');
+          console.error(err);
+        }
+        return;
+      }
+
+      showLoading();
+      try {
+        const res = await fetch(`${API_BASE}/api/products/${productId}`);
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.detail || `HTTP ${res.status}`);
+        }
+        const product = await res.json();
+        renderProduct(product);
+      } catch (err) {
+        showError(`Failed to load product #${productId}: ${err.message}`);
+        console.error('Load error:', err);
+      }
+    }
+
+    // ─── UI UTILITIES ─────────────────────────────────────────────────────────
+    function toggleTheme() {
+      const html = document.documentElement;
+      html.setAttribute('data-theme', html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    }
+
+    function initUI() {
+      // Scroll reveal
+      document.querySelectorAll('.reveal').forEach(el => {
+        new IntersectionObserver((entries) => {
+          entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+        }, { threshold: 0.1 }).observe(el);
+      });
+
+      // Navbar shadow on scroll
+      window.addEventListener('scroll', () => {
+        document.querySelector('nav').style.boxShadow = window.scrollY > 20 ? '0 4px 30px rgba(0,0,0,0.12)' : 'none';
+      });
+
+      // Gallery dots (decorative)
+      document.querySelectorAll('.dot').forEach((dot) => {
+        dot.addEventListener('click', () => {
+          document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
+          dot.classList.add('active');
+        });
+      });
+
+      // Wishlist toggle
+      const wishlistBtn = document.querySelector('.hero-wishlist');
+      let wishlisted = false;
+      wishlistBtn.addEventListener('click', () => {
+        wishlisted = !wishlisted;
+        wishlistBtn.textContent = wishlisted ? '❤️' : '♡';
+      });
+
+      // Floating chat bubble → chatbot page
+      document.querySelector('.chat-bubble').onclick = () => {
+        window.location.href = 'revalio-chatbot.html';
+      };
+    }
+
+    // ─── BOOT ─────────────────────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', () => {
+      initUI();
+      loadProduct();
+    });
+  </script>
+
+</body>
+</html>

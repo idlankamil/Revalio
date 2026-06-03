@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Assistant — Revalio</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;0,900;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --accent: #00C9A7; --accent-2: #0EA5E9;
+      --accent-glow: rgba(0,201,167,0.2); --accent-glow-strong: rgba(0,201,167,0.4);
+      --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    [data-theme="dark"] {
+      --bg: #080C12; --bg-card: #111820; --bg-2: #0D1117;
+      --border: rgba(255,255,255,0.07); --border-hover: rgba(0,201,167,0.4);
+      --text-primary: #F0F4FF; --text-secondary: #8B9EC0; --text-muted: #4A5A72;
+      --nav-bg: rgba(8,12,18,0.88); --badge-bg: rgba(0,201,167,0.1);
+      --tag-bg: rgba(255,255,255,0.05); --step-bg: rgba(255,255,255,0.03);
+      --input-bg: rgba(255,255,255,0.05); --sidebar-bg: #0D1117;
+      --bot-bubble: #131E2E; --user-bubble-text: #fff;
+      --prompt-bg: rgba(255,255,255,0.04);
+    }
+    [data-theme="light"] {
+      --bg: #F5F7FA; --bg-card: #fff; --bg-2: #fff;
+      --border: rgba(0,0,0,0.07); --border-hover: rgba(0,201,167,0.5);
+      --text-primary: #0D1117; --text-secondary: #4A5A72; --text-muted: #9BADC2;
+      --nav-bg: rgba(245,247,250,0.92); --badge-bg: rgba(0,201,167,0.08);
+      --tag-bg: rgba(0,0,0,0.04); --step-bg: rgba(0,0,0,0.02);
+      --input-bg: #fff; --sidebar-bg: #fff;
+      --bot-bubble: #F0F4FA; --user-bubble-text: #fff;
+      --prompt-bg: rgba(0,0,0,0.03);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text-primary); transition: background var(--transition), color var(--transition); overflow: hidden; display: flex; flex-direction: column; }
+
+    a { text-decoration: none; color: inherit; }
+
+    /* ============================================================
+       NAV
+    ============================================================ */
+    nav {
+      flex-shrink: 0; backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      background: var(--nav-bg); border-bottom: 1px solid var(--border);
+      transition: background var(--transition); z-index: 100;
+    }
+    .nav-inner { max-width: 1280px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; height: 64px; }
+    .nav-logo { display: flex; align-items: center; gap: 10px; font-family: 'Playfair Display', serif; font-weight: 800; font-size: 1.5rem; font-style: italic; }
+    .nav-logo-icon { width: 32px; height: 32px; border-radius: 8px; background: linear-gradient(135deg, var(--accent), var(--accent-2)); display: flex; align-items: center; justify-content: center; font-size: 0.9rem; color: white; font-style: normal; }
+    .nav-logo span { color: var(--accent); }
+    .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
+    .nav-links a { font-size: 0.875rem; font-weight: 500; color: var(--text-secondary); transition: color var(--transition); }
+    .nav-links a:hover { color: var(--text-primary); }
+    .nav-links a.active { color: var(--accent); }
+    .nav-right { display: flex; align-items: center; gap: 1rem; }
+    .theme-toggle { width: 44px; height: 24px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; cursor: pointer; position: relative; transition: all var(--transition); display: flex; align-items: center; padding: 2px; }
+    .theme-toggle::after { content: ''; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); transition: transform var(--transition); display: block; }
+    [data-theme="light"] .theme-toggle::after { transform: translateX(20px); }
+    .theme-icon { position: absolute; font-size: 10px; transition: opacity var(--transition); }
+    .theme-icon.moon { right: 5px; opacity: 1; } .theme-icon.sun { left: 5px; opacity: 0; }
+    [data-theme="light"] .theme-icon.moon { opacity: 0; } [data-theme="light"] .theme-icon.sun { opacity: 1; }
+    .nav-cta { padding: 8px 18px; border-radius: 8px; background: var(--accent); color: #fff; font-size: 0.85rem; font-weight: 600; font-family: 'Plus Jakarta Sans', sans-serif; border: none; cursor: pointer; transition: all var(--transition); }
+    .nav-cta:hover { opacity: 0.85; transform: translateY(-1px); box-shadow: 0 4px 20px var(--accent-glow-strong); }
+
+    /* ============================================================
+       MAIN CHAT LAYOUT — fills remaining height
+    ============================================================ */
+    .chat-layout {
+      flex: 1; display: grid; grid-template-columns: 300px 1fr;
+      overflow: hidden; min-height: 0;
+    }
+
+    /* ============================================================
+       LEFT SIDEBAR — Conversation history + suggestions
+    ============================================================ */
+    .chat-sidebar {
+      background: var(--sidebar-bg); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; overflow: hidden;
+      transition: background var(--transition);
+    }
+
+    .sidebar-top {
+      padding: 1.25rem; border-bottom: 1px solid var(--border); flex-shrink: 0;
+    }
+
+    .new-chat-btn {
+      width: 100%; padding: 10px 16px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      border: none; cursor: pointer; font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700; font-size: 0.85rem; color: white;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: all var(--transition);
+    }
+    .new-chat-btn:hover { opacity: 0.88; box-shadow: 0 4px 20px var(--accent-glow-strong); }
+
+    .sidebar-section-label {
+      padding: 1rem 1.25rem 0.5rem;
+      font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--text-muted);
+    }
+
+    .history-list { flex: 1; overflow-y: auto; padding: 0 0.75rem 1rem; }
+    .history-list::-webkit-scrollbar { width: 3px; }
+    .history-list::-webkit-scrollbar-thumb { background: var(--border); }
+
+    .history-item {
+      display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+      border-radius: 12px; cursor: pointer; transition: all var(--transition);
+      margin-bottom: 2px;
+    }
+    .history-item:hover { background: var(--step-bg); }
+    .history-item.active { background: var(--badge-bg); border: 1px solid rgba(0,201,167,0.15); }
+    .history-icon { font-size: 1rem; flex-shrink: 0; }
+    .history-info { flex: 1; min-width: 0; }
+    .history-title { font-size: 0.8rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .history-item.active .history-title { color: var(--accent); }
+    .history-meta { font-size: 0.68rem; color: var(--text-muted); margin-top: 1px; }
+    .history-del { opacity: 0; font-size: 0.7rem; color: var(--text-muted); cursor: pointer; padding: 2px 5px; border-radius: 4px; transition: all var(--transition); flex-shrink: 0; }
+    .history-item:hover .history-del { opacity: 1; }
+    .history-del:hover { color: #fb7185; background: rgba(251,113,133,0.1); }
+
+    /* Capabilities at bottom */
+    .sidebar-caps { padding: 1rem 1.25rem; border-top: 1px solid var(--border); flex-shrink: 0; }
+    .caps-title { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); margin-bottom: 0.75rem; }
+    .cap-item { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: 0.78rem; color: var(--text-secondary); }
+    .cap-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
+
+    /* ============================================================
+       RIGHT — MAIN CHAT AREA
+    ============================================================ */
+    .chat-main {
+      display: flex; flex-direction: column; overflow: hidden; position: relative;
+    }
+
+    /* Chat header bar */
+    .chat-topbar {
+      flex-shrink: 0; padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--bg); transition: background var(--transition);
+    }
+    .chat-topbar-left { display: flex; align-items: center; gap: 12px; }
+    .ai-avatar {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem; color: white; flex-shrink: 0;
+      box-shadow: 0 4px 16px var(--accent-glow-strong);
+      animation: pulse-avatar 3s ease-in-out infinite;
+    }
+    @keyframes pulse-avatar { 0%,100%{box-shadow:0 4px 16px var(--accent-glow-strong)} 50%{box-shadow:0 4px 28px var(--accent-glow-strong), 0 0 40px var(--accent-glow)} }
+    .ai-name { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 800; }
+    .ai-status { display: flex; align-items: center; gap: 5px; font-size: 0.72rem; color: var(--text-muted); }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #4ade80; animation: pulse-dot 2s ease-in-out infinite; }
+    @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.6;transform:scale(0.8)} }
+
+    .chat-topbar-right { display: flex; align-items: center; gap: 8px; }
+    .topbar-btn { width: 36px; height: 36px; border-radius: 10px; background: var(--step-bg); border: 1px solid var(--border); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; color: var(--text-muted); transition: all var(--transition); }
+    .topbar-btn:hover { border-color: var(--border-hover); color: var(--accent); }
+
+    /* ============================================================
+       MESSAGES AREA
+    ============================================================ */
+    .messages-wrap {
+      flex: 1; overflow-y: auto; padding: 2rem 2rem 1rem;
+      display: flex; flex-direction: column; gap: 1.5rem;
+      scroll-behavior: smooth;
+    }
+    .messages-wrap::-webkit-scrollbar { width: 4px; }
+    .messages-wrap::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    /* Welcome screen */
+    .welcome-screen {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 2rem; text-align: center; gap: 1.5rem;
+    }
+    .welcome-orb {
+      width: 80px; height: 80px; border-radius: 24px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.2rem; color: white;
+      box-shadow: 0 12px 40px var(--accent-glow-strong);
+      animation: morph 8s ease-in-out infinite;
+    }
+    @keyframes morph { 0%,100%{border-radius:24px} 50%{border-radius:50%} }
+    .welcome-title { font-family: 'Playfair Display', serif; font-size: 1.8rem; font-weight: 800; }
+    .welcome-title em { font-style: italic; color: var(--accent); }
+    .welcome-sub { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.7; max-width: 420px; }
+
+    /* Prompt suggestions */
+    .prompt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; width: 100%; max-width: 620px; margin-top: 0.5rem; }
+    .prompt-card {
+      background: var(--prompt-bg); border: 1px solid var(--border);
+      border-radius: 14px; padding: 0.9rem 1rem; cursor: pointer;
+      transition: all var(--transition); text-align: left;
+    }
+    .prompt-card:hover { border-color: var(--border-hover); background: var(--badge-bg); transform: translateY(-2px); }
+    .prompt-icon { font-size: 1.2rem; margin-bottom: 6px; display: block; }
+    .prompt-title { font-size: 0.82rem; font-weight: 700; margin-bottom: 3px; }
+    .prompt-desc { font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; }
+
+    /* Messages */
+    .msg-row { display: flex; gap: 12px; align-items: flex-start; animation: msg-in 0.3s ease both; }
+    .msg-row.user { flex-direction: row-reverse; }
+    @keyframes msg-in { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+
+    .msg-avatar { width: 32px; height: 32px; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
+    .msg-avatar.bot { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: white; box-shadow: 0 4px 12px var(--accent-glow); }
+    .msg-avatar.user { background: var(--step-bg); border: 1px solid var(--border); }
+
+    .msg-content { max-width: 70%; display: flex; flex-direction: column; gap: 8px; }
+    .msg-row.user .msg-content { align-items: flex-end; }
+
+    .msg-name { font-size: 0.72rem; font-weight: 700; color: var(--text-muted); padding: 0 4px; }
+
+    .bubble {
+      padding: 12px 16px; border-radius: 18px;
+      font-size: 0.88rem; line-height: 1.6;
+    }
+    .bubble.bot { background: var(--bot-bubble); border: 1px solid var(--border); border-top-left-radius: 4px; color: var(--text-primary); }
+    .bubble.user { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: var(--user-bubble-text); border-top-right-radius: 4px; }
+    .bubble strong { font-weight: 700; }
+
+    /* Image bubble */
+    .img-bubble {
+      border-radius: 14px; overflow: hidden; border: 1px solid var(--border);
+      width: 200px; background: linear-gradient(135deg, rgba(0,201,167,0.12), rgba(14,165,233,0.12));
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 1.5rem; gap: 8px; text-align: center;
+    }
+    .img-bubble .img-icon { font-size: 2.5rem; }
+    .img-bubble .img-name { font-size: 0.72rem; color: var(--text-muted); font-weight: 600; }
+
+    /* Product recommendation cards inside chat */
+    .product-recs { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; width: 100%; max-width: 480px; }
+    .rec-card {
+      background: var(--bg-card); border: 1px solid var(--border); border-radius: 14px;
+      padding: 12px; display: flex; align-items: center; gap: 12px;
+      cursor: pointer; transition: all var(--transition);
+    }
+    .rec-card:hover { border-color: var(--border-hover); transform: translateX(4px); }
+    .rec-emoji { font-size: 2rem; flex-shrink: 0; }
+    .rec-info { flex: 1; min-width: 0; }
+    .rec-name { font-family: 'Playfair Display', serif; font-size: 0.88rem; font-weight: 700; margin-bottom: 3px; }
+    .rec-meta { display: flex; align-items: center; gap: 8px; font-size: 0.72rem; color: var(--text-muted); }
+    .rec-platform { color: var(--accent); font-weight: 600; }
+    .rec-score-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; flex-shrink: 0; }
+    .rec-score { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 900; color: var(--accent); }
+    .rec-score-label { font-size: 0.62rem; color: var(--text-muted); }
+    .rec-match { font-size: 0.68rem; padding: 2px 8px; border-radius: 100px; background: var(--badge-bg); color: var(--accent); font-weight: 700; }
+
+    /* Typing indicator */
+    .typing-row { display: flex; gap: 12px; align-items: flex-start; animation: msg-in 0.3s ease both; }
+    .typing-bubble { padding: 14px 18px; background: var(--bot-bubble); border: 1px solid var(--border); border-radius: 18px; border-top-left-radius: 4px; display: flex; gap: 5px; align-items: center; }
+    .t-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--text-muted); animation: t-bounce 1.2s ease-in-out infinite; }
+    .t-dot:nth-child(2) { animation-delay: 0.2s; }
+    .t-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes t-bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-7px)} }
+
+    /* Timestamp */
+    .msg-time { font-size: 0.65rem; color: var(--text-muted); padding: 0 4px; }
+
+    /* Error bubble */
+    .bubble.error { background: rgba(251,113,133,0.08); border-color: rgba(251,113,133,0.2); color: #fb7185; }
+
+    /* ============================================================
+       INPUT AREA
+    ============================================================ */
+    .input-area {
+      flex-shrink: 0; padding: 1rem 1.5rem 1.25rem;
+      border-top: 1px solid var(--border);
+      background: var(--bg); transition: background var(--transition);
+    }
+
+    /* Image preview */
+    .img-preview-bar {
+      display: none; align-items: center; gap: 10px;
+      margin-bottom: 0.75rem; padding: 8px 12px;
+      background: var(--step-bg); border: 1px solid var(--border);
+      border-radius: 12px;
+    }
+    .img-preview-bar.show { display: flex; animation: msg-in 0.2s ease both; }
+    .preview-thumb {
+      width: 44px; height: 44px; border-radius: 8px;
+      background: linear-gradient(135deg, rgba(0,201,167,0.15), rgba(14,165,233,0.15));
+      display: flex; align-items: center; justify-content: center; font-size: 1.3rem;
+      flex-shrink: 0; border: 1px solid var(--border);
+    }
+    .preview-info { flex: 1; }
+    .preview-name { font-size: 0.8rem; font-weight: 600; }
+    .preview-size { font-size: 0.7rem; color: var(--text-muted); }
+    .preview-remove { font-size: 0.8rem; color: var(--text-muted); cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: all var(--transition); }
+    .preview-remove:hover { color: #fb7185; background: rgba(251,113,133,0.1); }
+
+    .input-row { display: flex; align-items: flex-end; gap: 10px; }
+
+    .input-actions { display: flex; flex-direction: column; gap: 6px; }
+    .action-btn {
+      width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+      background: var(--step-bg); border: 1px solid var(--border);
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; color: var(--text-muted); transition: all var(--transition);
+    }
+    .action-btn:hover { border-color: var(--border-hover); color: var(--accent); background: var(--badge-bg); }
+    .action-btn.upload-active { background: var(--badge-bg); border-color: var(--border-hover); color: var(--accent); }
+
+    .input-box-wrap {
+      flex: 1; background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden; transition: all var(--transition);
+      display: flex; align-items: flex-end;
+    }
+    .input-box-wrap:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+
+    #chat-textarea {
+      flex: 1; padding: 12px 16px; background: transparent; border: none; outline: none;
+      font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.9rem;
+      color: var(--text-primary); resize: none; max-height: 140px; min-height: 48px;
+      line-height: 1.5;
+    }
+    #chat-textarea::placeholder { color: var(--text-muted); }
+
+    .send-btn {
+      margin: 8px; width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; color: white; transition: all var(--transition);
+    }
+    .send-btn:hover { transform: scale(1.08); box-shadow: 0 4px 16px var(--accent-glow-strong); }
+    .send-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    .input-hint { text-align: center; font-size: 0.7rem; color: var(--text-muted); margin-top: 0.6rem; }
+
+    /* Capability chips below input */
+    .input-chips { display: flex; gap: 6px; margin-bottom: 0.75rem; flex-wrap: wrap; }
+    .input-chip {
+      display: flex; align-items: center; gap: 5px; padding: 4px 12px;
+      border-radius: 100px; background: var(--step-bg); border: 1px solid var(--border);
+      font-size: 0.72rem; color: var(--text-muted); cursor: pointer;
+      transition: all var(--transition);
+    }
+    .input-chip:hover { border-color: var(--border-hover); color: var(--accent); }
+
+    /* ============================================================
+       RESPONSIVE
+    ============================================================ */
+    @media(max-width:1024px) {
+      .chat-layout { grid-template-columns: 1fr; }
+      .chat-sidebar { display: none; position: fixed; top: 64px; left: 0; bottom: 0; width: 280px; z-index: 200; }
+      .chat-sidebar.open { display: flex; animation: slide-in 0.3s ease; }
+      @keyframes slide-in { from{transform:translateX(-100%)} to{transform:translateX(0)} }
+    }
+    @media(max-width:640px) {
+      .nav-links { display: none; }
+      .prompt-grid { grid-template-columns: 1fr; }
+      .msg-content { max-width: 85%; }
+      .chat-input-area { padding: 0.75rem 1rem; padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px)); }
+      .chat-input-row { gap: 0.5rem; }
+      .chat-input { font-size: 0.9rem; }
+      .chat-messages { padding-bottom: 1rem; }
+      nav { padding: 0 1rem; }
+    }
+  </style>
+  <script src="config.js"></script>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <a href="revalio-home.html" class="nav-logo" style="text-decoration:none;color:inherit;"><div class="nav-logo-icon">✦</div><span style="color:var(--text-primary)">Reva</span><span style="color:var(--accent);margin-left:-10px">lio</span></a>
+      <ul class="nav-links">
+        <li><a href="revalio-home.html">Home</a></li>
+        <li><a href="revalio-search.html">Browse</a></li>
+        <li><a href="#" class="active">AI Assistant</a></li>
+      </ul>
+      <div class="nav-right">
+        <button class="theme-toggle" onclick="toggleTheme()">
+          <span class="theme-icon moon">🌙</span>
+          <span class="theme-icon sun">☀️</span>
+        </button>
+        <button class="nav-cta" onclick="window.location.href='revalio-search.html'">Get Started</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- CHAT LAYOUT -->
+  <div class="chat-layout">
+
+    <!-- LEFT SIDEBAR -->
+    <aside class="chat-sidebar" id="chat-sidebar">
+      <div class="sidebar-top">
+        <button class="new-chat-btn" onclick="newChat()">✦ New Conversation</button>
+      </div>
+
+      <div class="sidebar-section-label">Recent Chats</div>
+
+      <div class="history-list" id="history-list">
+        <div id="history-empty" style="padding:1rem 0.75rem;font-size:0.78rem;color:var(--text-muted);line-height:1.6;">
+          No recent chats yet.<br>Start a conversation!
+        </div>
+      </div>
+
+      <div class="sidebar-caps">
+        <div class="caps-title">Capabilities</div>
+        <div class="cap-item"><div class="cap-dot"></div>Natural language product search</div>
+        <div class="cap-item"><div class="cap-dot"></div>Budget-based filtering</div>
+        <div class="cap-item"><div class="cap-dot"></div>Image recognition search</div>
+        <div class="cap-item"><div class="cap-dot"></div>Side-by-side comparison</div>
+        <div class="cap-item"><div class="cap-dot"></div>Review insight summaries</div>
+      </div>
+    </aside>
+
+    <!-- MAIN CHAT -->
+    <div class="chat-main">
+
+      <!-- Top bar -->
+      <div class="chat-topbar">
+        <div class="chat-topbar-left">
+          <div class="ai-avatar">✦</div>
+          <div>
+            <div class="ai-name">Revalio AI</div>
+            <div class="ai-status"><span class="status-dot"></span>Online · Powered by GPT-4</div>
+          </div>
+        </div>
+        <div class="chat-topbar-right">
+          <button class="topbar-btn" title="Clear chat" onclick="clearChat()">🗑</button>
+          <button class="topbar-btn" title="Toggle sidebar" onclick="toggleSidebar()">☰</button>
+          <button class="topbar-btn" title="Settings" onclick="openSettings()">⚙</button>
+        </div>
+      </div>
+
+      <!-- Settings Modal -->
+      <div id="settings-modal" style="display:none;position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);align-items:center;justify-content:center;">
+        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:1.75rem;width:340px;max-width:90vw;display:flex;flex-direction:column;gap:1.25rem;">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:800;">Settings</div>
+            <button onclick="closeSettings()" style="background:none;border:none;cursor:pointer;font-size:1.1rem;color:var(--text-muted);padding:4px 8px;border-radius:6px;" title="Close">✕</button>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.75rem;">
+            <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);">Appearance</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--step-bg);border:1px solid var(--border);border-radius:12px;">
+              <span style="font-size:0.85rem;font-weight:600;">Dark Mode</span>
+              <button class="theme-toggle" onclick="toggleTheme()" style="flex-shrink:0;">
+                <span class="theme-icon moon">🌙</span>
+                <span class="theme-icon sun">☀️</span>
+              </button>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.75rem;">
+            <div style="font-size:0.72rem;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--text-muted);">Chat</div>
+            <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--step-bg);border:1px solid var(--border);border-radius:12px;">
+              <div>
+                <div style="font-size:0.85rem;font-weight:600;">Backend URL</div>
+                <div style="font-size:0.72rem;color:var(--text-muted);margin-top:2px;" id="settings-api-url">http://localhost:8000</div>
+              </div>
+              <div style="width:8px;height:8px;border-radius:50%;background:#4ade80;" id="settings-status-dot"></div>
+            </div>
+            <button onclick="clearAllChats()" style="padding:10px 14px;background:rgba(251,113,133,0.08);border:1px solid rgba(251,113,133,0.2);border-radius:12px;color:#fb7185;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;transition:all 0.2s;text-align:left;">
+              🗑 Clear All Chat History
+            </button>
+          </div>
+          <div style="font-size:0.72rem;color:var(--text-muted);text-align:center;">Revalio v1.0 · PSM 1 · UTeM FAIX</div>
+        </div>
+      </div>
+
+      <!-- Messages -->
+      <div class="messages-wrap" id="messages-wrap">
+
+        <!-- Welcome Screen -->
+        <div class="welcome-screen" id="welcome-screen">
+          <div class="welcome-orb">✦</div>
+          <div>
+            <div class="welcome-title">Hello! I'm <em>Revalio AI</em></div>
+            <p class="welcome-sub">Ask me anything about electronics — budget, features, comparisons. You can even upload a product photo and I'll identify it for you! 📸</p>
+          </div>
+          <div class="prompt-grid">
+            <div class="prompt-card" onclick="usePrompt(this)">
+              <span class="prompt-icon">💻</span>
+              <div class="prompt-title">Best laptop for programming</div>
+              <div class="prompt-desc">Under RM3,000 with good battery</div>
+            </div>
+            <div class="prompt-card" onclick="usePrompt(this)">
+              <span class="prompt-icon">🎧</span>
+              <div class="prompt-title">Top headphones for studying</div>
+              <div class="prompt-desc">Noise cancelling, comfortable</div>
+            </div>
+            <div class="prompt-card" onclick="usePrompt(this)">
+              <span class="prompt-icon">📸</span>
+              <div class="prompt-title">Upload a product photo</div>
+              <div class="prompt-desc">I'll identify it and find reviews</div>
+            </div>
+            <div class="prompt-card" onclick="usePrompt(this)">
+              <span class="prompt-icon">⚖️</span>
+              <div class="prompt-title">Compare two products</div>
+              <div class="prompt-desc">Side-by-side specs & scores</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- INPUT AREA -->
+      <div class="input-area">
+
+        <!-- Quick chips -->
+        <div class="input-chips">
+          <div class="input-chip" onclick="quickSend('Best laptop under RM3000')">💻 Best laptop under RM3000</div>
+          <div class="input-chip" onclick="quickSend('Top rated keyboards')">⌨️ Top keyboards</div>
+          <div class="input-chip" onclick="quickSend('Compare iPhone 17 Pro vs Samsung Galaxy S24 Ultra')">⚖️ Compare products</div>
+          <div class="input-chip" onclick="triggerUpload()">📷 Upload image</div>
+        </div>
+
+        <!-- Image preview bar -->
+        <div class="img-preview-bar" id="img-preview-bar">
+          <div class="preview-thumb">📷</div>
+          <div class="preview-info">
+            <div class="preview-name" id="preview-filename">product_photo.jpg</div>
+            <div class="preview-size">Image ready to send</div>
+          </div>
+          <span class="preview-remove" onclick="removeImage()">✕ Remove</span>
+        </div>
+
+        <div class="input-row">
+          <div class="input-actions">
+            <button class="action-btn" id="upload-btn" onclick="triggerUpload()" title="Upload product image">📷</button>
+            <input type="file" id="file-input" accept="image/*" style="display:none" onchange="handleFileSelect(this)" />
+          </div>
+          <div class="input-box-wrap">
+            <textarea id="chat-textarea" placeholder="Ask about any product, upload a photo, or describe what you need..." rows="1" onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+            <button class="send-btn" id="send-btn" onclick="sendMessage()">→</button>
+          </div>
+        </div>
+        <div class="input-hint">Revalio AI can make mistakes. Always verify important decisions. 🧠</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ============================================================
+    // CONFIG
+    // ============================================================
+    const API_BASE = window.REVALIO_API_BASE || 'http://localhost:8000';
+
+    // ============================================================
+    // THEME
+    // ============================================================
+    function toggleTheme() {
+      document.documentElement.setAttribute('data-theme',
+        document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    }
+
+    // ============================================================
+    // CHAT STATE
+    // ============================================================
+    const wrap = document.getElementById('messages-wrap');
+    const textarea = document.getElementById('chat-textarea');
+    const welcomeScreen = document.getElementById('welcome-screen');
+    let hasStarted = false;
+    let pendingImage = null;           // { name, size, file }
+    let isBotTyping = false;
+
+    // Conversation history sent to backend on each turn
+    const conversationHistory = [];
+
+    // ============================================================
+    // SAVED CHATS (in-memory — persists while page is open)
+    // Each entry: { id, title, icon, timestamp, messageCount, history, messages(DOM snapshots) }
+    // ============================================================
+    const savedChats = [];
+    let currentChatId = null;
+
+    function getChatIcon(text) {
+      const t = text.toLowerCase();
+      if (t.includes('laptop') || t.includes('macbook') || t.includes('asus') || t.includes('lenovo')) return '💻';
+      if (t.includes('phone') || t.includes('iphone') || t.includes('samsung') || t.includes('pixel')) return '📱';
+      if (t.includes('keyboard')) return '⌨️';
+      if (t.includes('monitor') || t.includes('screen') || t.includes('display')) return '🖥️';
+      if (t.includes('image') || t.includes('photo') || t.includes('upload') || t.includes('picture')) return '📷';
+      if (t.includes('headphone') || t.includes('earphone') || t.includes('audio')) return '🎧';
+      if (t.includes('compare') || t.includes('vs')) return '⚖️';
+      if (t.includes('budget') || t.includes('cheap') || t.includes('rm')) return '💰';
+      return '💬';
+    }
+
+    function getRelativeTime(ts) {
+      const diff = Date.now() - ts;
+      const mins = Math.floor(diff / 60000);
+      if (mins < 1) return 'Just now';
+      if (mins < 60) return `${mins}m ago`;
+      const hrs = Math.floor(mins / 60);
+      if (hrs < 24) return `${hrs}h ago`;
+      const days = Math.floor(hrs / 24);
+      if (days === 1) return 'Yesterday';
+      return `${days} days ago`;
+    }
+
+    function saveCurrentChat(firstUserMessage) {
+      // Called when the first user message is sent in a new chat
+      const id = Date.now();
+      currentChatId = id;
+      savedChats.unshift({
+        id,
+        title: firstUserMessage.slice(0, 40) || 'New Chat',
+        icon: getChatIcon(firstUserMessage),
+        timestamp: Date.now(),
+        messageCount: 0,
+      });
+      renderHistoryList();
+    }
+
+    function updateCurrentChat() {
+      // Update message count and timestamp on each exchange
+      const chat = savedChats.find(c => c.id === currentChatId);
+      if (chat) {
+        chat.messageCount = conversationHistory.length;
+        chat.timestamp = Date.now();
+        renderHistoryList();
+      }
+    }
+
+    function renderHistoryList() {
+      const list = document.getElementById('history-list');
+      const empty = document.getElementById('history-empty');
+
+      if (savedChats.length === 0) {
+        list.innerHTML = `<div id="history-empty" style="padding:1rem 0.75rem;font-size:0.78rem;color:var(--text-muted);line-height:1.6;">No recent chats yet.<br>Start a conversation!</div>`;
+        return;
+      }
+
+      list.innerHTML = savedChats.map(chat => `
+        <div class="history-item ${chat.id === currentChatId ? 'active' : ''}" onclick="switchChat(${chat.id})">
+          <div class="history-icon">${chat.icon}</div>
+          <div class="history-info">
+            <div class="history-title">${escapeHtml(chat.title)}</div>
+            <div class="history-meta">${getRelativeTime(chat.timestamp)} · ${chat.messageCount} messages</div>
+          </div>
+          <span class="history-del" onclick="deleteChat(event, ${chat.id})">🗑</span>
+        </div>
+      `).join('');
+    }
+
+    function switchChat(id) {
+      // For PSM demo scope: switching just highlights the item.
+      // Full restore would require storing DOM snapshots — out of scope.
+      currentChatId = id;
+      renderHistoryList();
+    }
+
+    function deleteChat(e, id) {
+      e.stopPropagation();
+      const idx = savedChats.findIndex(c => c.id === id);
+      if (idx !== -1) savedChats.splice(idx, 1);
+      if (currentChatId === id) currentChatId = null;
+      renderHistoryList();
+    }
+
+    function clearAllChats() {
+      savedChats.length = 0;
+      currentChatId = null;
+      renderHistoryList();
+      newChat();
+      closeSettings();
+    }
+
+    // ============================================================
+    // SETTINGS MODAL
+    // ============================================================
+    function openSettings() {
+      document.getElementById('settings-api-url').textContent = API_BASE;
+      document.getElementById('settings-modal').style.display = 'flex';
+    }
+
+    function closeSettings() {
+      document.getElementById('settings-modal').style.display = 'none';
+    }
+
+    // Close modal on backdrop click
+    document.getElementById('settings-modal').addEventListener('click', function(e) {
+      if (e.target === this) closeSettings();
+    });
+
+    // ============================================================
+    // RENDER — USER MESSAGE
+    // ============================================================
+    function addUserMessage(text, imageData) {
+      hideWelcome();
+      const row = document.createElement('div');
+      row.className = 'msg-row user';
+
+      let contentHTML = '';
+      if (imageData) {
+        contentHTML += `
+          <div class="img-bubble">
+            <div class="img-icon">📷</div>
+            <div class="img-name">${imageData.name}</div>
+          </div>
+        `;
+      }
+      if (text) {
+        contentHTML += `<div class="bubble user">${escapeHtml(text)}</div>`;
+      }
+      contentHTML += `<div class="msg-time">${getTime()}</div>`;
+
+      row.innerHTML = `
+        <div class="msg-avatar user">👤</div>
+        <div class="msg-content">${contentHTML}</div>
+      `;
+      wrap.appendChild(row);
+      scrollDown();
+    }
+
+    // ============================================================
+    // RENDER — BOT MESSAGE
+    // ============================================================
+    function renderBotMessage(text, products, isError = false) {
+      const row = document.createElement('div');
+      row.className = 'msg-row';
+
+      const bubbleClass = isError ? 'bubble bot error' : 'bubble bot';
+      let bubbleHTML = `<div class="${bubbleClass}">${formatText(text)}</div>`;
+
+      let productsHTML = '';
+      if (products && products.length > 0) {
+        productsHTML = `<div class="product-recs">`;
+        products.forEach(p => {
+          const shopeePrice = p.shopee_price || 0;
+          const lazadaPrice = p.lazada_price || 0;
+          const cheaperPlatform = (shopeePrice > 0 && lazadaPrice > 0)
+            ? (shopeePrice <= lazadaPrice ? 'Shopee' : 'Lazada')
+            : (shopeePrice > 0 ? 'Shopee' : 'Lazada');
+          const bestPrice = Math.min(
+            shopeePrice > 0 ? shopeePrice : Infinity,
+            lazadaPrice > 0 ? lazadaPrice : Infinity
+          );
+          const displayPrice = bestPrice === Infinity ? 'N/A' : `RM ${bestPrice.toLocaleString()}`;
+          const categoryEmoji = getCategoryEmoji(p.category);
+
+          productsHTML += `
+            <div class="rec-card" onclick="window.location.href='revalio-product-detail.html?id=${p.id}'">
+              <div class="rec-emoji">${categoryEmoji}</div>
+              <div class="rec-info">
+                <div class="rec-name">${p.name}</div>
+                <div class="rec-meta">
+                  <span class="rec-platform">${cheaperPlatform}</span>
+                  <span>·</span>
+                  <span>${displayPrice}</span>
+                </div>
+              </div>
+              <div class="rec-score-wrap">
+                <div class="rec-score">${p.overall_rating != null ? parseFloat(p.overall_rating).toFixed(1) : '—'}</div>
+                <div class="rec-score-label">/10</div>
+                <div class="rec-match">Best Deal</div>
+              </div>
+            </div>`;
+        });
+        productsHTML += `</div>`;
+      }
+
+      row.innerHTML = `
+        <div class="msg-avatar bot">✦</div>
+        <div class="msg-content">
+          <div class="msg-name">Revalio AI</div>
+          ${bubbleHTML}
+          ${productsHTML}
+          <div class="msg-time">${getTime()}</div>
+        </div>
+      `;
+      wrap.appendChild(row);
+      scrollDown();
+    }
+
+    function getCategoryEmoji(category) {
+      if (!category) return '📦';
+      const c = category.toLowerCase();
+      if (c.includes('laptop')) return '💻';
+      if (c.includes('phone')) return '📱';
+      if (c.includes('keyboard')) return '⌨️';
+      if (c.includes('monitor')) return '🖥️';
+      return '📦';
+    }
+
+    // ============================================================
+    // RENDER — TYPING INDICATOR
+    // ============================================================
+    function createTyping() {
+      const row = document.createElement('div');
+      row.className = 'typing-row';
+      row.id = 'typing-indicator';
+      row.innerHTML = `
+        <div class="msg-avatar bot">✦</div>
+        <div class="typing-bubble">
+          <div class="t-dot"></div>
+          <div class="t-dot"></div>
+          <div class="t-dot"></div>
+        </div>
+      `;
+      return row;
+    }
+
+    function showTyping() {
+      const existing = document.getElementById('typing-indicator');
+      if (existing) return;
+      const typingRow = createTyping();
+      wrap.appendChild(typingRow);
+      scrollDown();
+    }
+
+    function hideTyping() {
+      const existing = document.getElementById('typing-indicator');
+      if (existing) existing.remove();
+    }
+
+    // ============================================================
+    // SEND MESSAGE
+    // ============================================================
+    async function sendMessage() {
+      if (isBotTyping) return;
+      const text = textarea.value.trim();
+      if (!text && !pendingImage) return;
+
+      const userText = text;
+      const userImage = pendingImage;
+
+      // Save to history sidebar on first message of a new chat
+      if (!currentChatId) {
+        saveCurrentChat(userText || '📷 Image upload');
+      }
+
+      // Render user bubble immediately
+      addUserMessage(userText, userImage);
+
+      // Clear input
+      textarea.value = '';
+      textarea.style.height = 'auto';
+      pendingImage = null;
+      removeImage();
+
+      // Hit the real API
+      await callChatAPI(userText, userImage);
+
+      // Update message count in sidebar
+      updateCurrentChat();
+    }
+
+    // ============================================================
+    // REAL API CALL
+    // Backend uses Form fields (not JSON body) so we send FormData.
+    // Fields: message (str), history (JSON string), image (file, optional)
+    // ============================================================
+    async function callChatAPI(text, image) {
+      isBotTyping = true;
+      document.getElementById('send-btn').disabled = true;
+
+      // Append text-only turn to history before sending
+      // (image bytes aren't stored in history — backend re-reads from form)
+      conversationHistory.push({ role: 'user', content: text || '' });
+
+      showTyping();
+
+      try {
+        // Build FormData — matches backend: message, history, image
+        const formData = new FormData();
+        formData.append('message', text || '');
+        formData.append('history', JSON.stringify(
+          // Send all previous turns EXCEPT the one we just appended (backend adds it internally)
+          conversationHistory.slice(0, -1)
+        ));
+        if (image && image.file) {
+          formData.append('image', image.file, image.name);
+        }
+
+        // No Content-Type header — browser sets it automatically with boundary for FormData
+        const response = await fetch(`${API_BASE}/api/chat`, {
+          method: 'POST',
+          body: formData
+        });
+
+        hideTyping();
+
+        if (!response.ok) {
+          let errMsg = `Server error (${response.status}).`;
+          try {
+            const errData = await response.json();
+            if (errData.detail) errMsg = errData.detail;
+          } catch (_) {}
+          renderBotMessage(`⚠️ ${errMsg} Please check the backend is running.`, null, true);
+          conversationHistory.pop(); // remove failed user turn from history
+        } else {
+          const data = await response.json();
+          const replyText = data.reply || 'No response from server.';
+          const replyProducts = data.products || null;
+
+          // Save assistant reply to history for next turn's context
+          conversationHistory.push({ role: 'assistant', content: replyText });
+
+          renderBotMessage(replyText, replyProducts);
+        }
+
+      } catch (err) {
+        hideTyping();
+        console.error('Chat API error:', err);
+        renderBotMessage(
+          `⚠️ Could not reach the backend. Make sure FastAPI is running on <strong>localhost:8000</strong> and try again.`,
+          null,
+          true
+        );
+        conversationHistory.pop(); // remove failed user turn
+      }
+
+      isBotTyping = false;
+      document.getElementById('send-btn').disabled = false;
+    }
+
+    // ============================================================
+    // IMAGE UPLOAD
+    // ============================================================
+    function triggerUpload() {
+      document.getElementById('file-input').click();
+    }
+
+    function handleFileSelect(input) {
+      if (input.files && input.files[0]) {
+        const file = input.files[0];
+        // Store the actual File object so we can base64 it on send
+        pendingImage = { name: file.name, size: file.size, file: file };
+        document.getElementById('preview-filename').textContent = file.name;
+        document.getElementById('img-preview-bar').classList.add('show');
+        document.getElementById('upload-btn').classList.add('upload-active');
+        textarea.placeholder = 'Add a message with your image (optional)...';
+        textarea.focus();
+      }
+    }
+
+    function removeImage() {
+      pendingImage = null;
+      document.getElementById('img-preview-bar').classList.remove('show');
+      document.getElementById('upload-btn').classList.remove('upload-active');
+      document.getElementById('file-input').value = '';
+      textarea.placeholder = 'Ask about any product, upload a photo, or describe what you need...';
+    }
+
+    // ============================================================
+    // TEXT HELPERS
+    // ============================================================
+    function formatText(text) {
+      return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\n/g, '<br>')
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    }
+
+    function escapeHtml(text) {
+      return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    function hideWelcome() {
+      if (!hasStarted) {
+        hasStarted = true;
+        welcomeScreen.style.opacity = '0';
+        welcomeScreen.style.transform = 'translateY(-10px)';
+        welcomeScreen.style.transition = '0.3s ease';
+        setTimeout(() => welcomeScreen.remove(), 300);
+      }
+    }
+
+    function scrollDown() {
+      setTimeout(() => { wrap.scrollTop = wrap.scrollHeight; }, 50);
+    }
+
+    function getTime() {
+      return new Date().toLocaleTimeString('en-MY', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    // ============================================================
+    // UI HELPERS
+    // ============================================================
+    function handleKey(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+      }
+    }
+
+    function autoResize(el) {
+      el.style.height = 'auto';
+      el.style.height = Math.min(el.scrollHeight, 140) + 'px';
+    }
+
+    function usePrompt(card) {
+      const title = card.querySelector('.prompt-title').textContent;
+      if (title.includes('Upload')) {
+        triggerUpload();
+        return;
+      }
+      textarea.value = title;
+      textarea.focus();
+      autoResize(textarea);
+    }
+
+    function quickSend(text) {
+      if (text === 'Upload image') { triggerUpload(); return; }
+      textarea.value = text;
+      sendMessage();
+    }
+
+    function newChat() {
+      hasStarted = false;
+      conversationHistory.length = 0;
+      currentChatId = null;
+      wrap.innerHTML = '';
+      const ws = document.createElement('div');
+      ws.className = 'welcome-screen';
+      ws.id = 'welcome-screen';
+      ws.innerHTML = `
+        <div class="welcome-orb">✦</div>
+        <div>
+          <div class="welcome-title">Hello! I'm <em>Revalio AI</em></div>
+          <p class="welcome-sub">Ask me anything about electronics — budget, features, comparisons. You can even upload a product photo and I'll identify it for you! 📸</p>
+        </div>
+        <div class="prompt-grid">
+          <div class="prompt-card" onclick="usePrompt(this)"><span class="prompt-icon">💻</span><div class="prompt-title">Best laptop for programming</div><div class="prompt-desc">Under RM3,000 with good battery</div></div>
+          <div class="prompt-card" onclick="usePrompt(this)"><span class="prompt-icon">🎧</span><div class="prompt-title">Top headphones for studying</div><div class="prompt-desc">Noise cancelling, comfortable</div></div>
+          <div class="prompt-card" onclick="usePrompt(this)"><span class="prompt-icon">📸</span><div class="prompt-title">Upload a product photo</div><div class="prompt-desc">I'll identify it and find reviews</div></div>
+          <div class="prompt-card" onclick="usePrompt(this)"><span class="prompt-icon">⚖️</span><div class="prompt-title">Compare two products</div><div class="prompt-desc">Side-by-side specs & scores</div></div>
+        </div>
+      `;
+      wrap.appendChild(ws);
+      removeImage();
+      textarea.value = '';
+      renderHistoryList();
+    }
+
+    function clearChat() {
+      newChat();
+    }
+
+    function toggleSidebar() {
+      document.getElementById('chat-sidebar').classList.toggle('open');
+    }
+
+    // Navbar scroll shadow
+    window.addEventListener('scroll', () => {
+      document.querySelector('nav').style.boxShadow = window.scrollY > 20 ? '0 4px 30px rgba(0,0,0,0.12)' : 'none';
+    }, { passive: true });
+  </script>
+</body>
+</html>
